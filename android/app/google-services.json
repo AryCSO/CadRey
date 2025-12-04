@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "814496571300",
+    "project_id": "cadrey-f8a6f",
+    "storage_bucket": "cadrey-f8a6f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:814496571300:android:81bdce8da57b32c17e6b31",
+        "android_client_info": {
+          "package_name": "com.example.cadrey"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAz0ysZHfSHyxpQHqJWMOPIWHScjYVKbBU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
