@@ -1,16 +1,13 @@
-# cadrey
+# Cadastra Rey
 
-A new Flutter project.
+A new Flutter project!!
 
-## Getting Started
+Uma ferramenta baseada em Flutter com Dart, que serve em sua primariedade como um cadastro de clientes e produtos, sendo que é possivel a inclusão, edição e exclusão de qualquer cadastro.
 
-This project is a starting point for a Flutter application.
+> Tecnologias Utilizadas
+- Flutter (Web e Mobile)
+- Hive (Banco de dados local)
+- APIs externas: ViaCEP, API CNPJ, Google Photos API
+- Arquitetura MVVM
+- Design Pattern Factory
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
