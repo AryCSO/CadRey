@@ -42,7 +42,7 @@ void main() async {
   //     if (kDebugMode) {
   //       print(doc['Nome']);
   //     }
-  //   }
+  //   } // teste de firestore
 
   runApp(
     MultiProvider(
