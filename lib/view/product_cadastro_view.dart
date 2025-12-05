@@ -37,7 +37,7 @@ class ProductCadastroView extends StatelessWidget {
                   onChanged: (query) {
                     viewModel.setSearchQuery(query);
                   },
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.black),
                 ),
               ),
             ),
@@ -150,13 +150,27 @@ class ProductCadastroView extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(
-                  isEditing ? 'Editar Produto' : 'Novo Produto',
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
+                Column(
+                  children: [
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                        }, 
+                        icon: Icon(Icons.close, color: Colors.teal,)),
+                      ],
+                    ),
+                    Text(
+                      isEditing ? 'Editar Produto' : 'Novo Produto',
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.teal,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 20),
                 TextField(

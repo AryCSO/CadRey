@@ -14,7 +14,6 @@ import 'models/product_model.dart';
 import 'models/client_model.dart';
 
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
 
   await _initHive();
@@ -27,7 +26,7 @@ void main() async {
 
   // FirebaseFirestore.instance.collection('Cad').doc('Cad1').set({
   //   'Nome': 'Aryel',
-  // }); 
+  // });
 
   // var collection = FirebaseFirestore.instance.collection('Cad');
 
@@ -92,6 +91,7 @@ class CadastreReyApp extends StatelessWidget {
         '/': (context) => const DashboardView(),
         '/cadastro-cliente': (context) => const ClientCadastroView(),
         '/cadastro-produto': (context) => const ProductCadastroView(),
+        '/principal': (context) => const CadastreReyApp(),
       },
     );
   }
@@ -114,13 +114,57 @@ class DashboardView extends StatelessWidget {
         title: const Text(
           'Cadastra Rey',
           style: TextStyle(
-            color: Colors.white, 
+            color: Colors.white,
             fontSize: 30,
-            fontWeight: FontWeight.bold
+            fontWeight: FontWeight.bold,
           ),
         ),
         backgroundColor: Colors.blue[700],
         elevation: 0,
+      ),
+      drawer: Drawer(
+        child: Column(
+          children: [
+            ListTile(
+              title: Text('Opções', style: TextStyle(color: Colors.lightBlue), textAlign: TextAlign.center,),
+              leading: const Icon(Icons.keyboard_return, color: Colors.lightBlue),
+              onTap: () {Navigator.pop(context);}
+            ),
+            // UserAccountsDrawerHeader(accountName: , accountEmail: )
+            UserAccountsDrawerHeader(
+              currentAccountPicture: const CircleAvatar(
+                backgroundImage: AssetImage("assets/account.png"),
+                backgroundColor: Colors.white), 
+                accountName: null, 
+                accountEmail: null,),
+            ListTile(
+              leading: Icon(Icons.account_box, color:Colors.blue),
+              title: Text('Perfil', style: TextStyle(color: Colors.lightBlue),),
+              onTap: () {}
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings, color: Colors.blue),
+              title: Text('Configurações', style: TextStyle(color: Colors.lightBlue),),
+              onTap: () {}
+            ),
+            ListTile(
+              leading: const Icon(Icons.history, color: Colors.blue),
+              title: Text('Históricos', style: TextStyle(color: Colors.lightBlue),),
+              onTap: () {}
+            ),
+            ListTile(
+              leading: const Icon(Icons.dashboard, color: Colors.blue),
+              title: Text('DashBoard', style: TextStyle(color: Colors.lightBlue),),
+              onTap: () {}
+            ),
+            const Spacer(),
+            ListTile(
+              leading: const Icon(Icons.logout, color: Colors.red,),
+              title: Text('Logout', style: TextStyle(color: Colors.redAccent)),
+              onTap: () {},
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -176,20 +220,25 @@ class DashboardView extends StatelessWidget {
         ),
       ),
       floatingActionButton: SpeedDial(
-
         iconTheme: IconThemeData(color: Colors.white),
-        icon:  Icons.add,
+        icon: Icons.add,
         activeIcon: Icons.close,
-        label: const Text('Adicionar', style: TextStyle(color: Colors.white,fontSize: 16)),
+        label: const Text(
+          'Adicionar',
+          style: TextStyle(color: Colors.white, fontSize: 16),
+        ),
         backgroundColor: Colors.blue[700],
 
         children: [
-
           SpeedDialChild(
             onTap: () => Navigator.pushNamed(context, '/cadastro-cliente'),
             backgroundColor: Colors.blue,
             label: 'Clientes',
-            labelStyle: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 16),
+            labelStyle: TextStyle(
+              color: Colors.blue,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
             child: Icon(Icons.people_rounded, size: 30, color: Colors.white),
           ),
 
@@ -197,10 +246,13 @@ class DashboardView extends StatelessWidget {
             onTap: () => Navigator.pushNamed(context, '/cadastro-produto'),
             backgroundColor: Colors.teal,
             label: 'Produtos',
-            labelStyle: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold, fontSize: 16),
+            labelStyle: TextStyle(
+              color: Colors.teal,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
             child: Icon(Icons.inventory_2_sharp, size: 30, color: Colors.white),
           ),
-
         ],
       ),
     );

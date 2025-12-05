@@ -233,6 +233,16 @@ class ClientCadastroView extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
+                          Row(
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                icon: Icon(Icons.close, color: Colors.blue),
+                              ),
+                            ],
+                          ),
                           Text(
                             isEditing ? client.nome : 'Novo Cliente',
                             style: const TextStyle(
