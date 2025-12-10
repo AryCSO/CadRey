@@ -1,55 +1,38 @@
+import 'package:cadrey/pages/clientes/client_cadastro_view.dart';
+import 'package:cadrey/pages/clientes/client_service.dart';
+import 'package:cadrey/pages/clientes/client_viewmodel.dart';
+import 'package:cadrey/pages/produtos/product_cadastro_view.dart';
+import 'package:cadrey/pages/produtos/product_service.dart';
+import 'package:cadrey/pages/produtos/product_viewmodel.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:cadrey/view/product_cadastro_view.dart';
-import 'package:cadrey/view/client_cadastro_view.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'viewmodels/product_viewmodel.dart';
-import 'viewmodels/client_viewmodel.dart';
-import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
-import 'services/product_service.dart';
 import 'package:flutter/material.dart';
-import 'services/client_service.dart';
-import 'models/product_model.dart';
-import 'models/client_model.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await _initHive();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
+  // Hive desativado temporariamente para focar no Firestore. 
+  // Se quiser manter cache local, podemos reativar depois.
+  /*
+  await _initHive();
   Hive.registerAdapter(ProductModelAdapter());
   Hive.registerAdapter(ClientModelAdapter());
   Hive.registerAdapter(DependentModelAdapter());
-
-  // await Firebase.initializeApp();
-
-  // FirebaseFirestore.instance.collection('Cad').doc('Cad1').set({
-  //   'Nome': 'Aryel',
-  // });
-
-  // var collection = FirebaseFirestore.instance.collection('Cad');
-
-  //   var result = await collection.get();
-  //   collection.snapshots().listen((result) {
-  //     if (kDebugMode) {
-  //       print(result.docs[0]['Nome']);
-  //     }
-  //   });
-
-  //   for(var doc in result.docs){
-  //     if (kDebugMode) {
-  //       print(doc['Nome']);
-  //     }
-  //   } // teste de firestore dataBase
+  */
 
   runApp(
     MultiProvider(
       providers: [
+        // Injeta os serviços. Agora os serviços usarão Firestore internamente.
         ChangeNotifierProvider(
           create: (_) => ProductViewModel(ProductService())..loadProducts(),
         ),
-
         ChangeNotifierProvider(
           create: (_) => ClientViewModel(ClientService())..loadClients(),
         ),
@@ -59,23 +42,11 @@ void main() async {
   );
 }
 
+/*
 Future<void> _initHive() async {
-  if (!kIsWeb) {
-    try {
-      final dir = await getApplicationDocumentsDirectory();
-      await Hive.initFlutter(dir.path);
-    } catch (e) {
-      if (kDebugMode) {
-        print(
-          'Erro ao obter o diretório de documentos', //hive com erro (deu pau)
-        );
-      }
-      await Hive.initFlutter();
-    }
-  } else {
-    await Hive.initFlutter();
-  }
+  // Código do Hive comentado para evitar conflito ou uso desnecessário agora
 }
+*/
 
 class CadastreReyApp extends StatelessWidget {
   const CadastreReyApp({super.key});
@@ -91,7 +62,6 @@ class CadastreReyApp extends StatelessWidget {
         '/': (context) => const DashboardView(),
         '/cadastro-cliente': (context) => const ClientCadastroView(),
         '/cadastro-produto': (context) => const ProductCadastroView(),
-        '/principal': (context) => const CadastreReyApp(),
       },
     );
   }
@@ -130,13 +100,12 @@ class DashboardView extends StatelessWidget {
               leading: const Icon(Icons.keyboard_return, color: Colors.lightBlue),
               onTap: () {Navigator.pop(context);}
             ),
-            // UserAccountsDrawerHeader(accountName: , accountEmail: )
             UserAccountsDrawerHeader(
               currentAccountPicture: const CircleAvatar(
                 backgroundImage: AssetImage("assets/account.png"),
                 backgroundColor: Colors.white), 
-                accountName: null, 
-                accountEmail: null,),
+                accountName: const Text("Usuário"), 
+                accountEmail: const Text("usuario@datarey.com"),),
             ListTile(
               leading: Icon(Icons.account_box, color:Colors.blue),
               title: Text('Perfil', style: TextStyle(color: Colors.lightBlue),),

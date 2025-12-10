@@ -1,10 +1,10 @@
-import 'package:cadrey/viewmodels/product_viewmodel.dart';
-import 'package:cadrey/models/product_model.dart';
+import 'package:cadrey/pages/produtos/product_viewmodel.dart';
+import 'package:cadrey/pages/produtos/Model/product_model.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
-class ProductCadastroView extends StatelessWidget {
-  const ProductCadastroView({super.key});
+class FornCadastroView extends StatelessWidget {
+  const FornCadastroView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,10 +14,10 @@ class ProductCadastroView extends StatelessWidget {
           appBar: AppBar(
             iconTheme: IconThemeData(color: (Colors.white)),
             title: const Text(
-              'Cadastro de Produtos',
+              'Cadastro de Fornecedor',
               style: TextStyle(color: Colors.white),
             ),
-            backgroundColor: Colors.teal,
+            backgroundColor: Colors.yellow.shade800,
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(56.0),
               child: Padding(
@@ -25,7 +25,7 @@ class ProductCadastroView extends StatelessWidget {
 
                 child: TextField(
                   decoration: InputDecoration(
-                    hintText: 'Pesquisar Nome ou Código de Barras...',
+                    hintText: 'Pesquisar Nome ou Código...',
                     prefixIcon: const Icon(Icons.search, color: Colors.black),
                     filled: true,
                     fillColor: Colors.white,
@@ -48,15 +48,15 @@ class ProductCadastroView extends StatelessWidget {
               ? Center(
                   child: Text(
                     viewModel.products.isEmpty
-                        ? 'Nenhum produto cadastrado'
-                        : 'Nenhum resoltado cadastrado para a pesquisa "${viewModel.searchQuery}"',
-                    style: const TextStyle(fontSize: 18, color: Colors.grey),
+                        ? 'Nenhum fornecedor cadastrado'
+                        : 'Nenhum resultado cadastrado para a pesquisa "${viewModel.searchQuery}"',
+                    style: const TextStyle(fontSize: 18, color: Colors.orange),
                   ),
                 )
               : _buildProductList(context, viewModel),
             floatingActionButton: FloatingActionButton(
             onPressed: () => _showAddEditProductModal(context, viewModel),
-            backgroundColor: Colors.teal,
+            backgroundColor: Colors.yellow.shade800,
             child: Icon(Icons.add, color: Colors.white,),
           ),
         );
@@ -74,7 +74,7 @@ class ProductCadastroView extends StatelessWidget {
           elevation: 2,
           child: ListTile(
             leading: CircleAvatar(
-              backgroundColor: Colors.teal,
+              backgroundColor: Colors.yellow.shade800,
               child: Text(
                 product.estoque.toString(),
                 style: const TextStyle(
@@ -94,7 +94,7 @@ class ProductCadastroView extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.edit, color: Colors.teal),
+                  icon: const Icon(Icons.edit, color: Colors.yellow),
                   onPressed: () => _showAddEditProductModal(
                     context,
                     viewModel,
@@ -158,15 +158,15 @@ class ProductCadastroView extends StatelessWidget {
                           onPressed: () {
                             Navigator.pop(context);
                         }, 
-                        icon: Icon(Icons.close, color: Colors.teal,)),
+                        icon: Icon(Icons.close, color: Colors.orange,)),
                       ],
                     ),
                     Text(
-                      isEditing ? 'Editar Produto' : 'Novo Produto',
+                      isEditing ? 'Editar Fornecedor' : 'Novo Fornecedor',
                       style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
-                        color: Colors.teal,
+                        color: Colors.orange
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -176,35 +176,27 @@ class ProductCadastroView extends StatelessWidget {
                 TextField(
                   controller: nomeController,
                   decoration: const InputDecoration(
-                    labelText: 'Nome do Produto',
+                    labelText: 'CNPJ',
                   ),
                 ),
                 TextField(
                   controller: cdBarrasController,
                   decoration: const InputDecoration(
-                    labelText: 'Código de Barras',
+                    labelText: 'Razão Social',
                   ),
                   keyboardType: TextInputType.number,
-                  enabled: !isEditing,
-                ),
-                TextField(
-                  controller: precoController,
-                  decoration: const InputDecoration(labelText: 'Preço'),
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
                 ),
                 TextField(
                   controller: estoqueController,
                   decoration: const InputDecoration(
-                    labelText: 'Estoque Inicial',
+                    labelText: 'Nome Fantasia',
                   ),
                   keyboardType: TextInputType.number,
                 ),
                 const SizedBox(height: 30),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
+                    backgroundColor: Colors.yellow.shade800,
                     padding: const EdgeInsets.symmetric(vertical: 15),
                   ),
                   child: Icon(Icons.save, color: Colors.white, size: 20),

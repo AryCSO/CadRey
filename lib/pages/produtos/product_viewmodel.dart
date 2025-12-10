@@ -1,5 +1,6 @@
-import 'package:cadrey/services/product_service.dart';
-import 'package:cadrey/models/product_model.dart';
+
+import 'package:cadrey/pages/produtos/Model/product_model.dart';
+import 'package:cadrey/pages/produtos/product_service.dart';
 import 'package:flutter/material.dart';
 
 class ProductViewModel extends ChangeNotifier {
@@ -20,9 +21,16 @@ class ProductViewModel extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    await _service.initialize();
+    // Inicialização pode não ser necessária, mas mantemos o contrato
+    await _service.initialize(); 
 
-    _products = _service.getAllProducts();
+    try {
+      // AGORA É ASSÍNCRONO: await é obrigatório aqui
+      _products = await _service.getAllProducts();
+    } catch (e) {
+      print("Erro ao carregar produtos: $e");
+      _products = [];
+    }
 
     _isLoading = false;
     notifyListeners();
@@ -55,21 +63,19 @@ class ProductViewModel extends ChangeNotifier {
     );
 
     await _service.addProduct(newProduct);
-
-    await loadProducts();
+    await loadProducts(); // Recarrega do Firestore
   }
 
   Future<void> deleteProduct(ProductModel product) async {
     await _service.deleteProduct(product);
-
-    _products.removeWhere((p) => p.key == product.key);
+    // Remove localmente para UI instantânea ou recarrega
+    _products.removeWhere((p) => p.id == product.id);
     notifyListeners();
   }
 
   Future<void> updateProduct(ProductModel product) async {
     await _service.updateProduct(product);
-
-    notifyListeners();
+    await loadProducts(); // Recarrega para garantir consistência
   }
 
   void setSearchQuery(String query) {
