@@ -29,16 +29,16 @@ class DependentModel {
       idCliente: map['idCliente'] ?? '',
       nome: map['nome'] ?? '',
       parentesco: map['parentesco'] ?? '',
-      dataNascimento: map['dataNascimento'] != null 
-          ? DateTime.parse(map['dataNascimento']) 
+      dataNascimento: map['dataNascimento'] != null
+          ? DateTime.parse(map['dataNascimento'])
           : DateTime.now(),
     );
   }
 }
 
 class ClientModel {
-  String? id; // ID do documento Firestore
-  String idCliente; // ID interno de negócio (GUID)
+  String? id;
+  String idCliente;
   String nome;
   String cpf;
   DateTime dataNascimento;
@@ -105,8 +105,8 @@ class ClientModel {
       idCliente: map['idCliente'] ?? '',
       nome: map['nome'] ?? '',
       cpf: map['cpf'] ?? '',
-      dataNascimento: map['dataNascimento'] != null 
-          ? DateTime.parse(map['dataNascimento']) 
+      dataNascimento: map['dataNascimento'] != null
+          ? DateTime.parse(map['dataNascimento'])
           : DateTime.now(),
       telefone: map['telefone'] ?? '',
       email: map['email'] ?? '',
@@ -119,8 +119,8 @@ class ClientModel {
       complemento: map['complemento'],
       empresaCnpj: map['empresaCnpj'],
       cargo: map['cargo'],
-      dataCadastro: map['dataCadastro'] != null 
-          ? DateTime.parse(map['dataCadastro']) 
+      dataCadastro: map['dataCadastro'] != null
+          ? DateTime.parse(map['dataCadastro'])
           : DateTime.now(),
       dependentes: map['dependentes'] != null
           ? List<DependentModel>.from(

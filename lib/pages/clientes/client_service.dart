@@ -1,8 +1,7 @@
-
 import 'package:cadrey/pages/clientes/Model/client_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-const String collectionName = 'clients';
+const String collectionName = 'Cad. Clientes';
 
 class ClientService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;

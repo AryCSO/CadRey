@@ -1,9 +1,8 @@
-// Removida dependência do Hive
 // import 'package:hive_flutter/hive_flutter.dart';
 // part 'product_model.g.dart';
 
 class ProductModel {
-  String? id; // ID do documento no Firestore
+  String? id;
   String cdBarras;
   String nome;
   String descricao;
@@ -29,7 +28,6 @@ class ProductModel {
     required this.dataCadastro,
   });
 
-  // Converte objeto para Map (Salvar no Firestore)
   Map<String, dynamic> toMap() {
     return {
       'cdBarras': cdBarras,
@@ -45,7 +43,6 @@ class ProductModel {
     };
   }
 
-  // Cria objeto a partir do Map (Ler do Firestore)
   factory ProductModel.fromMap(Map<String, dynamic> map, String documentId) {
     return ProductModel(
       id: documentId,

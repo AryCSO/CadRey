@@ -25,6 +25,7 @@ dependencies:
   cloud_firestore: 
   firebase_auth_dart: 
   sidebarx: ^0.17.2
+  collapsible_sidebar: 
   
 dev_dependencies:
   flutter_test:

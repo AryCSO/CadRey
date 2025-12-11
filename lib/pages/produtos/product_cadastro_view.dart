@@ -12,7 +12,6 @@ class ProductCadastroView extends StatefulWidget {
 }
 
 class _ProductCadastroViewState extends State<ProductCadastroView> {
-  // Estado local para controlar qual produto está sendo editado (ou se é um novo)
   ProductModel? _selectedProduct;
   bool _isCreatingNew = false;
 
@@ -40,8 +39,7 @@ class _ProductCadastroViewState extends State<ProductCadastroView> {
                         _isCreatingNew = true;
                       });
                     },
-                    icon: const Icon(Icons.add, size: 18),
-                    label: const Text("Novo Produto"),
+                    label: Icon(Icons.add, size: 18),
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.teal[700],
                       backgroundColor: Colors.white,
@@ -52,7 +50,6 @@ class _ProductCadastroViewState extends State<ProductCadastroView> {
           ),
           body: Row(
             children: [
-              // --- PAINEL ESQUERDO: LISTA DE PRODUTOS (35% da tela) ---
               Expanded(
                 flex: 4,
                 child: Container(
@@ -105,7 +102,7 @@ class _ProductCadastroViewState extends State<ProductCadastroView> {
                                       final product = viewModel.filteredProducts[index];
                                       final isSelected = _selectedProduct == product;
                                       return Container(
-                                        color: isSelected ? Colors.teal.withOpacity(0.1) : null,
+                                        color: isSelected ? Colors.teal : null,
                                         child: ListTile(
                                           leading: CircleAvatar(
                                             backgroundColor: Colors.teal,
@@ -150,15 +147,13 @@ class _ProductCadastroViewState extends State<ProductCadastroView> {
                   ),
                 ),
               ),
-
-              // --- PAINEL DIREITO: FORMULÁRIO (65% da tela) ---
               Expanded(
                 flex: 7,
                 child: Container(
                   color: Colors.white,
                   child: (_selectedProduct != null || _isCreatingNew)
                       ? _ProductForm(
-                          key: ValueKey(_selectedProduct?.hashCode ?? 'new'), // Força rebuild ao mudar produto
+                          key: ValueKey(_selectedProduct?.hashCode ?? 'Novo'), // Força rebuild
                           product: _selectedProduct,
                           isCreating: _isCreatingNew,
                           onCancel: () {
@@ -181,7 +176,7 @@ class _ProductCadastroViewState extends State<ProductCadastroView> {
                               Icon(Icons.inventory_2_outlined, size: 64, color: Colors.grey),
                               SizedBox(height: 16),
                               Text(
-                                "Selecione um produto para editar\nou clique em 'Novo Produto'",
+                                "Selecione um produto para editar\nou clique em '+' para adicionar um novo",
                                 style: TextStyle(color: Colors.grey, fontSize: 18),
                                 textAlign: TextAlign.center,
                               ),
@@ -212,10 +207,12 @@ class _ProductCadastroViewState extends State<ProductCadastroView> {
             onPressed: () async {
               await viewModel.deleteProduct(product);
               if (mounted) {
+                // ignore: use_build_context_synchronously
                 Navigator.pop(ctx);
                 setState(() {
-                  _selectedProduct = null; // Limpa seleção se o deletado era o atual
+                  _selectedProduct = null;
                 });
+                // ignore: use_build_context_synchronously
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Produto excluído com sucesso.'),
@@ -232,8 +229,6 @@ class _ProductCadastroViewState extends State<ProductCadastroView> {
     );
   }
 }
-
-// --- WIDGET DO FORMULÁRIO ISOLADO (Para o Painel Direito) ---
 class _ProductForm extends StatefulWidget {
   final ProductModel? product;
   final bool isCreating;
@@ -255,7 +250,6 @@ class _ProductForm extends StatefulWidget {
 class _ProductFormState extends State<_ProductForm> {
   final _formKey = GlobalKey<FormState>();
   
-  // Controllers
   late TextEditingController cdBarrasController;
   late TextEditingController nomeController;
   late TextEditingController precoController;
@@ -299,7 +293,6 @@ class _ProductFormState extends State<_ProductForm> {
       builder: (context, vm, child) {
         return Column(
           children: [
-            // Cabeçalho do Formulário
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               decoration: BoxDecoration(
@@ -340,7 +333,6 @@ class _ProductFormState extends State<_ProductForm> {
               ),
             ),
             
-            // Corpo do Formulário
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24),
@@ -349,7 +341,6 @@ class _ProductFormState extends State<_ProductForm> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // --- COLUNA 1: INFORMAÇÕES PRINCIPAIS ---
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -361,7 +352,7 @@ class _ProductFormState extends State<_ProductForm> {
                             TextFormField(
                               controller: cdBarrasController,
                               decoration: const InputDecoration(
-                                labelText: 'Código de Barras (EAN/SKU)',
+                                labelText: 'Cód Barras',
                                 border: OutlineInputBorder(),
                                 prefixIcon: Icon(Icons.qr_code),
                               ),
@@ -374,7 +365,7 @@ class _ProductFormState extends State<_ProductForm> {
                             TextFormField(
                               controller: nomeController,
                               decoration: const InputDecoration(
-                                labelText: 'Nome do Produto',
+                                labelText: 'Nome',
                                 border: OutlineInputBorder(),
                               ),
                               validator: (v) => v!.isEmpty ? 'Campo obrigatório' : null,
@@ -384,7 +375,7 @@ class _ProductFormState extends State<_ProductForm> {
                             TextFormField(
                               controller: descricaoController,
                               decoration: const InputDecoration(
-                                labelText: 'Descrição Detalhada',
+                                labelText: 'Descrição',
                                 border: OutlineInputBorder(),
                               ),
                               maxLines: 3,
@@ -395,7 +386,6 @@ class _ProductFormState extends State<_ProductForm> {
 
                       const SizedBox(width: 32),
 
-                      // --- COLUNA 2: VALORES E DETALHES ---
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -410,7 +400,7 @@ class _ProductFormState extends State<_ProductForm> {
                                   child: TextFormField(
                                     controller: precoController,
                                     decoration: const InputDecoration(
-                                      labelText: 'Preço (R\$)',
+                                      labelText: 'Preço',
                                       border: OutlineInputBorder(),
                                       prefixText: 'R\$ ',
                                     ),
@@ -461,7 +451,7 @@ class _ProductFormState extends State<_ProductForm> {
                             TextFormField(
                               controller: pesoController,
                               decoration: const InputDecoration(
-                                labelText: 'Peso (Kg)',
+                                labelText: 'Peso',
                                 border: OutlineInputBorder(),
                                 suffixText: 'kg',
                               ),
@@ -505,13 +495,12 @@ class _ProductFormState extends State<_ProductForm> {
           );
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Produto criado com sucesso!"), backgroundColor: Colors.teal),
+              const SnackBar(content: Text("Produto criado"), backgroundColor: Colors.teal),
             );
             widget.onSuccess();
           }
         } else {
           final product = widget.product!;
-          // Atualiza campos do objeto existente
           product.nome = newNome;
           product.preco = newPreco;
           product.estoque = newEstoque;
@@ -519,18 +508,18 @@ class _ProductFormState extends State<_ProductForm> {
           product.categoria = newCategoria;
           product.marca = newMarca;
           product.peso = newPeso;
-          // cdBarras não muda
 
           await vm.updateProduct(product);
           
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Produto atualizado com sucesso!"), backgroundColor: Colors.teal),
+              const SnackBar(content: Text("Produto atualizado"), backgroundColor: Colors.teal),
             );
             widget.onSuccess();
           }
         }
       } catch (e) {
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Erro ao salvar: $e"), backgroundColor: Colors.red),
         );

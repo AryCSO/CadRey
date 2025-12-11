@@ -21,14 +21,12 @@ class ProductViewModel extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    // Inicialização pode não ser necessária, mas mantemos o contrato
     await _service.initialize(); 
 
     try {
-      // AGORA É ASSÍNCRONO: await é obrigatório aqui
       _products = await _service.getAllProducts();
     } catch (e) {
-      print("Erro ao carregar produtos: $e");
+      ("Erro ao carregar produtos: $e");
       _products = [];
     }
 
@@ -75,7 +73,7 @@ class ProductViewModel extends ChangeNotifier {
 
   Future<void> updateProduct(ProductModel product) async {
     await _service.updateProduct(product);
-    await loadProducts(); // Recarrega para garantir consistência
+    await loadProducts();
   }
 
   void setSearchQuery(String query) {

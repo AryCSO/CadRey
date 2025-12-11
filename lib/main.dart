@@ -4,6 +4,7 @@ import 'package:cadrey/pages/clientes/client_viewmodel.dart';
 import 'package:cadrey/pages/produtos/product_cadastro_view.dart';
 import 'package:cadrey/pages/produtos/product_service.dart';
 import 'package:cadrey/pages/produtos/product_viewmodel.dart';
+import 'package:collapsible_sidebar/collapsible_sidebar.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -13,23 +14,16 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // Hive desativado temporariamente para focar no Firestore. 
-  // Se quiser manter cache local, podemos reativar depois.
-  /*
-  await _initHive();
-  Hive.registerAdapter(ProductModelAdapter());
-  Hive.registerAdapter(ClientModelAdapter());
-  Hive.registerAdapter(DependentModelAdapter());
-  */
+  // await _initHive();
+  // Hive.registerAdapter(ProductModelAdapter());
+  // Hive.registerAdapter(ClientModelAdapter());
+  // Hive.registerAdapter(DependentModelAdapter());
 
   runApp(
     MultiProvider(
       providers: [
-        // Injeta os serviços. Agora os serviços usarão Firestore internamente.
         ChangeNotifierProvider(
           create: (_) => ProductViewModel(ProductService())..loadProducts(),
         ),
@@ -42,11 +36,7 @@ void main() async {
   );
 }
 
-/*
-Future<void> _initHive() async {
-  // Código do Hive comentado para evitar conflito ou uso desnecessário agora
-}
-*/
+// Future<void> _initHive() async {
 
 class CadastreReyApp extends StatelessWidget {
   const CadastreReyApp({super.key});
@@ -56,10 +46,10 @@ class CadastreReyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Cadastre Rey',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(primaryColor: Colors.blue[700]),
+      theme: ThemeData(scaffoldBackgroundColor: Colors.indigo[100]),
       initialRoute: '/',
       routes: {
-        '/': (context) => const DashboardView(),
+        '/': (context) => DashboardView(),
         '/cadastro-cliente': (context) => const ClientCadastroView(),
         '/cadastro-produto': (context) => const ProductCadastroView(),
       },
@@ -68,6 +58,7 @@ class CadastreReyApp extends StatelessWidget {
 }
 
 class DashboardView extends StatelessWidget {
+  Color get primaryColor => Colors.white;
   const DashboardView({super.key});
 
   @override
@@ -75,20 +66,64 @@ class DashboardView extends StatelessWidget {
     final productViewModel = Provider.of<ProductViewModel>(context);
     final clientViewModel = Provider.of<ClientViewModel>(context);
 
+    final List<CollapsibleItem> items = [
+
+      CollapsibleItem(
+        text: 'Produtos',
+        icon: Icons.inventory,
+        onPressed: () {
+          Navigator.pushNamed(context, '/cadastro-produto');
+        },
+      ),
+
+      CollapsibleItem(
+        text: 'Clientes', 
+        icon: Icons.person, 
+        onPressed: () {
+          Navigator.pushNamed(context, '/cadastro-cliente');
+        }
+      ),
+
+      CollapsibleItem(
+        text: 'DashBoards',
+        icon: Icons.dashboard,
+        onPressed: () {
+          Navigator.pushNamed(context, '');
+        },
+      ),
+
+      CollapsibleItem(
+        text: 'Históricos',
+        icon: Icons.history,
+        onPressed: () {
+          Navigator.pushNamed(context, '');
+        },
+      ),
+
+      CollapsibleItem(
+        text: 'Configurações',
+        icon: Icons.settings,
+        onPressed: () {
+          Navigator.pushNamed(context, '');
+        },
+      ),
+    ];
+
     final totalProducts = productViewModel.products.length;
     final totalClients = clientViewModel.clients.length;
     final totalCadastros = totalProducts + totalClients;
 
     return Scaffold(
-      appBar: AppBar(
+      /*  appBar: AppBar(
         title: const Text(
-          'Cadastra Rey',
+          'CadRey',
           style: TextStyle(
             color: Colors.white,
             fontSize: 30,
             fontWeight: FontWeight.bold,
           ),
         ),
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Colors.blue[700],
         elevation: 0,
       ),
@@ -96,94 +131,136 @@ class DashboardView extends StatelessWidget {
         child: Column(
           children: [
             ListTile(
-              title: Text('Opções', style: TextStyle(color: Colors.lightBlue), textAlign: TextAlign.center,),
-              leading: const Icon(Icons.keyboard_return, color: Colors.lightBlue),
-              onTap: () {Navigator.pop(context);}
-            ),
-            UserAccountsDrawerHeader(
-              currentAccountPicture: const CircleAvatar(
-                backgroundImage: AssetImage("assets/account.png"),
-                backgroundColor: Colors.white), 
-                accountName: const Text("Usuário"), 
-                accountEmail: const Text("usuario@datarey.com"),),
-            ListTile(
-              leading: Icon(Icons.account_box, color:Colors.blue),
-              title: Text('Perfil', style: TextStyle(color: Colors.lightBlue),),
-              onTap: () {}
+              title: Text(
+                'Opções',
+                style: TextStyle(color: Colors.lightBlue),
+                textAlign: TextAlign.center,
+              ),
+              leading: const Icon(
+                Icons.keyboard_return,
+                color: Colors.lightBlue,
+              ),
+              onTap: () {
+                Navigator.pop(context);
+              },
             ),
             ListTile(
-              leading: const Icon(Icons.settings, color: Colors.blue),
-              title: Text('Configurações', style: TextStyle(color: Colors.lightBlue),),
-              onTap: () {}
+              leading: const Icon(Icons.person, color: Colors.blue),
+              title: Text(
+                'Clientes',
+                style: TextStyle(color: Colors.lightBlue),
+              ),
+              onTap: () => Navigator.pushNamed(context, '/cadastro-cliente'),
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.inventory, color: Colors.blue),
+              title: Text(
+                'Produtos',
+                style: TextStyle(color: Colors.lightBlue),
+              ),
+              onTap: () => Navigator.pushNamed(context, '/cadastro-produto'),
             ),
             ListTile(
               leading: const Icon(Icons.history, color: Colors.blue),
-              title: Text('Históricos', style: TextStyle(color: Colors.lightBlue),),
-              onTap: () {}
-            ),
-            ListTile(
-              leading: const Icon(Icons.dashboard, color: Colors.blue),
-              title: Text('DashBoard', style: TextStyle(color: Colors.lightBlue),),
-              onTap: () {}
+              title: Text(
+                'Históricos',
+                style: TextStyle(color: Colors.lightBlue),
+              ),
+              onTap: () {},
             ),
             const Spacer(),
             ListTile(
-              leading: const Icon(Icons.logout, color: Colors.red,),
-              title: Text('Logout', style: TextStyle(color: Colors.redAccent)),
+              leading: const Icon(Icons.settings, color: Colors.blue),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout, color: Colors.red),
+              title: Text('Logout', style: TextStyle(color: Colors.red)),
               onTap: () {},
             ),
           ],
         ),
-      ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 30),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      flex: 3,
-                      child: _buildTotalCard(
-                        context,
-                        title: 'Total Cadastros',
-                        value: totalCadastros,
-                        icon: Icons.storage_rounded,
-                        color: Colors.blue,
+      ), */
+      body: CollapsibleSidebar(
+        iconSize: 30,
+        items: items,
+        title: 'CadRey',
+        avatarImg: const AssetImage('assets/images/spider.jpeg'),
+
+        selectedIconBox: Colors.indigo[700]!,
+        backgroundColor: Colors.blue[700]!,
+        selectedTextColor: Colors.white,
+        selectedIconColor: Colors.white,
+        unselectedTextColor: Colors.white,
+        unselectedIconColor: Colors.white,
+
+        toggleTitle: 'Recolher',
+        toggleButtonIcon: Icons.menu,
+        isCollapsed: true,
+        toggleTitleStyle: TextStyle(
+          color: Colors.blue,
+          fontSize: 17,
+          fontWeight: FontWeight.bold,
+        ),
+
+        titleStyle: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 24,
+          color: Colors.blue,
+        ),
+        textStyle: TextStyle(fontSize: 20, color: Colors.blue),
+
+        body: SingleChildScrollView(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 30),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: _buildTotalCard(
+                          context,
+                          title: 'Total Cadastros',
+                          value: totalCadastros,
+                          icon: Icons.storage_rounded,
+                          color: Colors.blue,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      flex: 2,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _buildInfoCard(
-                            context,
-                            title: 'Clientes',
-                            value: totalClients,
-                            icon: Icons.people_rounded,
-                            color: Colors.blue,
-                          ),
-                          const SizedBox(height: 10),
-                          _buildInfoCard(
-                            context,
-                            title: 'Produtos',
-                            value: totalProducts,
-                            icon: Icons.inventory_2_sharp,
-                            color: Colors.teal,
-                          ),
-                        ],
+                      const SizedBox(width: 10),
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildInfoCard(
+                              context,
+                              title: 'Clientes',
+                              value: totalClients,
+                              icon: Icons.people_rounded,
+                              color: Colors.blue,
+                            ),
+                            const SizedBox(height: 10),
+                            _buildInfoCard(
+                              context,
+                              title: 'Produtos',
+                              value: totalProducts,
+                              icon: Icons.inventory_2_sharp,
+                              color: Colors.teal,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -197,7 +274,8 @@ class DashboardView extends StatelessWidget {
           style: TextStyle(color: Colors.white, fontSize: 16),
         ),
         backgroundColor: Colors.blue[700],
-
+        activeBackgroundColor: Colors.indigo,
+        elevation: 8,
         children: [
           SpeedDialChild(
             onTap: () => Navigator.pushNamed(context, '/cadastro-cliente'),
@@ -241,7 +319,6 @@ class DashboardView extends StatelessWidget {
 
     return Card(
       elevation: 8,
-
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: 330),
         child: Padding(

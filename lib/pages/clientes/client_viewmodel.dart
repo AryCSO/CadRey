@@ -39,11 +39,12 @@ class ClientViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ... (Métodos auxiliares de limpar campos mantidos iguais) ...
+  // ignore: unused_element
   void _clearAddressFields() {
     _logradouro = ''; _bairro = ''; _cidade = ''; _estado = ''; _numero = '';
     notifyListeners();
   }
+  // ignore: unused_element
   void _clearCnpjFields() {
     _empresa = ''; _nomeRazaoSocial = '';
     notifyListeners();
@@ -79,7 +80,6 @@ class ClientViewModel extends ChangeNotifier {
     await _clientService.initialize();
     
     try {
-      // AGORA É ASSÍNCRONO
       _clients = await _clientService.getAllClients();
     } catch (e) {
       if (kDebugMode) {
@@ -91,7 +91,6 @@ class ClientViewModel extends ChangeNotifier {
     _setLoading(false);
   }
 
-  // ... (Métodos searchCep e searchCnpj mantidos, são independentes do banco) ...
   Future<void> searchCep(String cep) async { /* Código existente */ }
   Future<void> searchCnpj(String cnpj) async { /* Código existente */ }
 
@@ -150,7 +149,7 @@ class ClientViewModel extends ChangeNotifier {
 
   Future<void> deleteClient(ClientModel client) async {
     await _clientService.deleteClient(client);
-    _clients.removeWhere((c) => c.id == client.id); // Usa ID do Firestore
+    _clients.removeWhere((c) => c.id == client.id);
     notifyListeners();
   }
 }
