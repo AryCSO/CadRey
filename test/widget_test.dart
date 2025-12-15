@@ -13,7 +13,7 @@ import 'package:cadrey/main.dart';
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const CadastreReyApp());
+    await tester.pumpWidget(CadastreReyApp());
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);

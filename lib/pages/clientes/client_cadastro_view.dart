@@ -13,241 +13,316 @@ class ClientCadastroView extends StatefulWidget {
 }
 
 class _ClientCadastroViewState extends State<ClientCadastroView> {
+  
   ClientModel? _selectedClient;
-  bool _isCreatingNew = false;
+  bool _isCreatingNew = false; 
 
   @override
   Widget build(BuildContext context) {
     return Consumer<ClientViewModel>(
       builder: (context, viewModel, child) {
-        return Scaffold(
-          backgroundColor: Colors.amber,
-          appBar: AppBar(
-            iconTheme: const IconThemeData(color: Colors.white),
-            title: const Text(
-              'Gestão de Clientes',
-              style: TextStyle(color: Colors.white),
+        
+        return Column(
+          children: [
+            
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              color: Colors.blue[700],
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Gestão de Clientes',
+                    style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  
+                  if (!_isCreatingNew && _selectedClient == null)
+                    
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          _selectedClient = null;
+                          _isCreatingNew = true;
+                        });
+
+                        viewModel.clearTempDependents(); 
+
+                      },
+                      label: const Icon(
+                        Icons.add, 
+                        size: 18
+                      ),
+
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Color(0x0007171b),
+                      ),
+                    ),
+                ],
+              ),
             ),
-            backgroundColor: Colors.indigo[400],
-            actions: [
-              if (!_isCreatingNew && _selectedClient == null)
-                Padding(
-                  padding: const EdgeInsets.only(right: 16.0),
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        _selectedClient = null;
-                        _isCreatingNew = true;
-                      });
-                      viewModel.clearTempDependents();
-                    },
-                    label: Icon(Icons.add),
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.blue[700],
-                      backgroundColor: Colors.white,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          body: Row(
-            children: [
-              Expanded(
-                flex: 4,
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      right: BorderSide(color: Colors.grey.shade300),
-                    ),
-                    color: Colors.grey.shade50,
-                  ),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: TextField(
-                          decoration: InputDecoration(
-                            hintText: 'Pesquisar Cliente...',
-                            prefixIcon: const Icon(Icons.search),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                            isDense: true,
-                          ),
-                          onChanged: (value) {},
+            
+            Expanded(
+              child: Row(
+                children: [
+                  
+                  Expanded(
+                    flex: 4, 
+
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          right: BorderSide(
+                            color: Color(0x0007171b)
+                          )
                         ),
+
+                        color: Color(0x0007171b),
+
                       ),
-                      const Divider(height: 1),
-                      Expanded(
-                        child: viewModel.isLoading
-                            ? const Center(child: CircularProgressIndicator())
-                            : viewModel.clients.isEmpty
-                            ? const Center(
-                                child: Text('Nenhum cliente cadastrado.'),
-                              )
-                            : ListView.builder(
-                                itemCount: viewModel.clients.length,
-                                itemBuilder: (context, index) {
-                                  final client = viewModel.clients[index];
-                                  final isSelected = _selectedClient == client;
-                                  return Container(
-                                    // ignore: deprecated_member_use
-                                    color: isSelected
-                                        ? Colors.indigo[200]
-                                        : null,
-                                    child: ListTile(
-                                      leading: CircleAvatar(
-                                        backgroundColor: client.cpf.length > 14
-                                            ? Colors.orange.shade100
-                                            : Colors.indigo.shade100,
-                                        child: Icon(
-                                          client.cpf.length > 14
-                                              ? Icons.domain
-                                              : Icons.person,
-                                          color: client.cpf.length > 14
-                                              ? Colors.orange
-                                              : Colors.indigo,
-                                          size: 20,
-                                        ),
-                                      ),
-                                      title: Text(
-                                        client.nome,
-                                        style: TextStyle(
-                                          fontWeight: isSelected
-                                              ? FontWeight.bold
-                                              : FontWeight.normal,
-                                        ),
-                                      ),
-                                      subtitle: Text(
-                                        '${client.cpf.length > 14 ? "CNPJ" : "CPF"}: ${client.cpf}',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      onTap: () {
-                                        setState(() {
-                                          _selectedClient = client;
-                                          _isCreatingNew = false;
-                                        });
-                                        viewModel.clearTempDependents();
-                                        if (client.dependentes != null) {
-                                          for (var d in client.dependentes!) {
-                                            viewModel.addTempDependent(
-                                              nome: d.nome,
-                                              parentesco: d.parentesco,
-                                              dataNascimento: d.dataNascimento,
-                                            );
-                                          }
-                                        }
-                                      },
-                                      trailing: isSelected
-                                          ? IconButton(
-                                              icon: const Icon(
-                                                Icons.delete,
-                                                color: Colors.red,
-                                              ),
-                                              onPressed: () => _confirmDelete(
-                                                context,
-                                                viewModel,
-                                                client,
-                                              ),
-                                            )
-                                          : null,
-                                    ),
-                                  );
-                                },
-                              ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 7,
-                child: Container(
-                  color: Colors.white,
-                  child: (_selectedClient != null || _isCreatingNew)
-                      ? _ClientForm(
-                          key: ValueKey(_selectedClient?.hashCode ?? 'Novo'),
-                          client: _selectedClient,
-                          isCreating: _isCreatingNew,
-                          onCancel: () {
-                            setState(() {
-                              _selectedClient = null;
-                              _isCreatingNew = false;
-                            });
-                          },
-                          onSuccess: () {
-                            setState(() {
-                              _selectedClient = null;
-                              _isCreatingNew = false;
-                            });
-                          },
-                        )
-                      : const Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.people, size: 64, color: Colors.grey),
-                              SizedBox(height: 16),
-                              Text(
-                                "Selecione um cliente para editar\nou clique em '+' para adicionar um novo",
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 18,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+
+                            child: TextField(
+                              decoration: InputDecoration(
+                                hintText: 'Pesquisar Cliente...',
+                                hintStyle: TextStyle(color: Colors.white),
+
+                                prefixIcon: const Icon(
+                                  Icons.search, 
+                                  color: Colors.white,
                                 ),
-                                textAlign: TextAlign.center,
+
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+
+                                filled: true,
+
+                                fillColor: Color(0x0007171b),
+
+                                isDense: true,
                               ),
-                            ],
+
+                              onChanged: (value) {},
+                            ),
                           ),
+
+                          const Divider(height: 1),
+                          
+                          Expanded(
+                            child: viewModel.isLoading
+                                ? const Center(child: CircularProgressIndicator())
+                                : viewModel.clients.isEmpty
+                                  ? const Center(
+                                    child: Text('Nenhum cliente cadastrado.', 
+                                      style: TextStyle(color: Colors.grey,)
+                                    ),
+                                  )
+                                  : ListView.builder(
+                                    itemCount: viewModel.clients.length,
+
+                                    itemBuilder: (context, index) {
+                                      final client = viewModel.clients[index];
+                                      final isSelected = _selectedClient == client;
+
+                                      return Container(
+
+                                        color: isSelected ? Colors.blue : null,
+
+                                        child: ListTile(
+                                          leading: CircleAvatar(
+                                            backgroundColor: client.cpf.length > 14
+                                              ? Colors.orange.shade100
+                                              : Colors.indigo.shade100,
+
+                                            child: Icon(
+                                              client.cpf.length > 14
+                                                  ? Icons.domain
+                                                  : Icons.person,
+                                              color: client.cpf.length > 14
+                                                  ? Colors.orange
+                                                  : Colors.indigo,
+                                              size: 20,
+                                            ),
+                                          ),
+
+                                          title: Text(
+                                            client.nome,
+
+                                            style: TextStyle(
+                                              fontWeight: isSelected 
+                                              ? FontWeight.bold 
+                                              : FontWeight.normal, 
+                                              color: Colors.white
+                                            ),
+                                          ),
+
+                                          subtitle: Text(
+                                            '${client.cpf.length > 14 
+                                                ? "CNPJ" 
+                                                : "CPF"
+                                              }: ${client.cpf}',
+                                            
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(color: Colors.white),
+                                          ),
+
+                                            onTap: () {
+                                              setState(() {
+                                                _selectedClient = client;
+                                                _isCreatingNew = false;
+                                              });
+                                                
+                                              viewModel.clearTempDependents();
+                                              if (client.dependentes != null) {
+                                                for (var d in client.dependentes!) {
+                                                  viewModel.addTempDependent(
+                                                    nome: d.nome,
+                                                    parentesco: d.parentesco,
+                                                    dataNascimento: d.dataNascimento,
+                                                  );
+                                                }
+                                              }
+                                            },
+
+                                            trailing: isSelected
+
+                                            ? IconButton(
+                                              icon: const Icon(
+                                                Icons.delete, 
+                                                color: Colors.red
+                                              ),
+                                              onPressed: () => _confirmDelete(context, viewModel, client),
+                                            ): null,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  
+                  Expanded(
+                    flex: 7,
+
+                    child: Container(
+                      color: Color(0x0007171b),
+                      child: (_selectedClient != null || _isCreatingNew)
+
+                      ? _ClientForm(
+                        key: ValueKey(_selectedClient?.hashCode ?? 'new'), 
+                        client: _selectedClient,
+                        isCreating: _isCreatingNew,
+
+                        onCancel: () {
+                          setState(() {
+                            _selectedClient = null;
+                            _isCreatingNew = false;
+                          });
+                        },
+
+                        onSuccess: () {
+                          setState(() {
+                            _selectedClient = null;
+                            _isCreatingNew = false;
+                          });
+                        },
+                      )
+
+                      : const Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+
+                          children: [
+                            Icon(
+                              Icons.person_pin, 
+                              size: 64, 
+                              color: Colors.grey
+                            ),
+                            
+                            SizedBox(height: 16),
+                            
+                            Text("Selecione um cliente para editar\nou clique em  +  para adicionar",
+                                style: TextStyle(
+                                  color: Colors.grey, 
+                                  fontSize: 18
+                                ),
+                              
+                            textAlign: TextAlign.center,
+                            ),
+                          ],
                         ),
-                ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         );
       },
     );
   }
 
   void _confirmDelete(
-    BuildContext context,
+    BuildContext context, 
     ClientViewModel viewModel,
-    ClientModel client,
-  ) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Confirmar Exclusão'),
-        content: Text(
-          'Tem certeza que deseja excluir o cliente "${client.nome}"?',
+
+    ClientModel client) {
+      showDialog(
+        context: context,
+
+        builder: (ctx) => AlertDialog(
+          backgroundColor: Color(0x60021D3B),
+          title: const Text('Confirmar Exclusão', 
+          style: TextStyle(
+            color: Colors.white, 
+            fontSize: 18
+          )
         ),
+
+        content: Text('Tem certeza que deseja excluir o cliente "${client.nome}"?', 
+          style: TextStyle(color: Colors.white),
+        ),
+
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancelar'),
+              child: const Text('Cancelar', 
+              style: TextStyle(color: Colors.white),
+            ),
           ),
+
           ElevatedButton(
             onPressed: () async {
               await viewModel.deleteClient(client);
+
               if (mounted) {
-                // ignore: use_build_context_synchronously
                 Navigator.pop(ctx);
+
                 setState(() {
-                  _selectedClient = null;
+                  _selectedClient = null; 
                 });
-                // ignore: use_build_context_synchronously
+
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Cliente excluído'),
+                    content: Text('Cliente excluído.'),
                     backgroundColor: Colors.redAccent,
                   ),
                 );
               }
             },
+
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Excluir', style: TextStyle(color: Colors.white)),
+            child: const Text('Excluir', 
+              style: TextStyle(color: Colors.white)
+            ),
           ),
         ],
       ),
@@ -256,17 +331,17 @@ class _ClientCadastroViewState extends State<ClientCadastroView> {
 }
 
 class _ClientForm extends StatefulWidget {
-  final ClientModel? client;
   final bool isCreating;
+  final ClientModel? client;
   final VoidCallback onCancel;
   final VoidCallback onSuccess;
 
   const _ClientForm({
     super.key,
     this.client,
-    required this.isCreating,
     required this.onCancel,
     required this.onSuccess,
+    required this.isCreating,
   });
 
   @override
@@ -276,98 +351,85 @@ class _ClientForm extends StatefulWidget {
 class _ClientFormState extends State<_ClientForm> {
   final _formKey = GlobalKey<FormState>();
   late bool isPessoaJuridica;
-
-  // Controllers
-  late TextEditingController nomeController;
   late TextEditingController cpfController;
-  late TextEditingController cnpjController;
-  late TextEditingController dataNascimentoController;
-  late TextEditingController telefoneController;
-  late TextEditingController emailController;
   late TextEditingController cepController;
-  late TextEditingController logradouroController;
+  late TextEditingController nomeController;
+  late TextEditingController cnpjController;
+  late TextEditingController cargoController;
+  late TextEditingController emailController;
   late TextEditingController numeroController;
   late TextEditingController bairroController;
   late TextEditingController cidadeController;
   late TextEditingController estadoController;
+  late TextEditingController telefoneController;
+  late TextEditingController logradouroController;
   late TextEditingController complementoController;
   late TextEditingController nomeFantasiaController;
-  late TextEditingController cargoController;
+  late TextEditingController dataNascimentoController;
   DateTime? selectedDate;
 
   @override
   void initState() {
     super.initState();
     final client = widget.client;
-
+    
     if (widget.isCreating) {
       isPessoaJuridica = false;
     } else {
       isPessoaJuridica = (client?.cpf.length ?? 0) > 14;
     }
-
+    
     nomeController = TextEditingController(text: client?.nome ?? '');
-    cpfController = TextEditingController(
-      text: (!isPessoaJuridica ? client?.cpf : '') ?? '',
-    );
-    cnpjController = TextEditingController(
-      text: (isPessoaJuridica ? client?.cpf : '') ?? '',
-    );
-
+    cpfController = TextEditingController(text: (!isPessoaJuridica ? client?.cpf : '') ?? '');
+    cnpjController = TextEditingController(text: (isPessoaJuridica ? client?.cpf : '') ?? '');
+    
     selectedDate = client?.dataNascimento;
-    dataNascimentoController = TextEditingController(
-      text: selectedDate != null
-          ? DateFormat('dd/MM/yyyy').format(selectedDate!)
-          : '',
-    );
 
-    telefoneController = TextEditingController(text: client?.telefone ?? '');
-    emailController = TextEditingController(text: client?.email ?? '');
-    cepController = TextEditingController(text: client?.cep ?? '');
-    logradouroController = TextEditingController(
-      text: client?.logradouro ?? '',
+    dataNascimentoController = TextEditingController(
+      text: selectedDate != null 
+      ? DateFormat('dd/MM/yyyy').format(selectedDate!) 
+      : '',
     );
+    
+    cepController = TextEditingController(text: client?.cep ?? '');
+    emailController = TextEditingController(text: client?.email ?? '');
+    cargoController = TextEditingController(text: client?.cargo ?? '');
     numeroController = TextEditingController(text: client?.numero ?? '');
     bairroController = TextEditingController(text: client?.bairro ?? '');
     cidadeController = TextEditingController(text: client?.cidade ?? '');
     estadoController = TextEditingController(text: client?.estado ?? '');
-    complementoController = TextEditingController(
-      text: client?.complemento ?? '',
-    );
-    nomeFantasiaController = TextEditingController(
-      text: client?.empresaCnpj ?? '',
-    );
-    cargoController = TextEditingController(text: client?.cargo ?? '');
+    telefoneController = TextEditingController(text: client?.telefone ?? '');
+    logradouroController = TextEditingController(text: client?.logradouro ?? '');
+    complementoController = TextEditingController(text: client?.complemento ?? '');
+    nomeFantasiaController = TextEditingController(text: client?.empresaCnpj ?? '');
   }
 
   @override
   void dispose() {
-    nomeController.dispose();
+    super.dispose();
     cpfController.dispose();
-    cnpjController.dispose();
-    dataNascimentoController.dispose();
-    telefoneController.dispose();
-    emailController.dispose();
     cepController.dispose();
-    logradouroController.dispose();
+    nomeController.dispose();
+    cnpjController.dispose();
+    emailController.dispose();
+    cargoController.dispose();
     numeroController.dispose();
     bairroController.dispose();
     cidadeController.dispose();
     estadoController.dispose();
+    telefoneController.dispose();
+    logradouroController.dispose();
     complementoController.dispose();
     nomeFantasiaController.dispose();
-    cargoController.dispose();
-    super.dispose();
+    dataNascimentoController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<ClientViewModel>(
       builder: (context, vm, child) {
-        if (vm.logradouro.isNotEmpty &&
-            logradouroController.text != vm.logradouro) {
-          if (!vm.logradouro.contains('Erro') &&
-              !vm.logradouro.contains('Buscando')) {
+        if (vm.logradouro.isNotEmpty && logradouroController.text != vm.logradouro) {
+          if (!vm.logradouro.contains('Deu ruim') && !vm.logradouro.contains('Buscando')) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (mounted) {
                 logradouroController.text = vm.logradouro;
@@ -380,17 +442,17 @@ class _ClientFormState extends State<_ClientForm> {
           }
         }
 
-        if (vm.nomeRazaoSocial.isNotEmpty &&
-            nomeController.text != vm.nomeRazaoSocial) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) nomeController.text = vm.nomeRazaoSocial;
-          });
+        if (vm.nomeRazaoSocial.isNotEmpty && nomeController.text != vm.nomeRazaoSocial) {
+           WidgetsBinding.instance.addPostFrameCallback((_) {
+             if(mounted) nomeController.text = vm.nomeRazaoSocial;
+           });
         }
-        if (vm.empresa.isNotEmpty &&
-            nomeFantasiaController.text != vm.empresa) {
+        
+        if (vm.empresa.isNotEmpty && nomeFantasiaController.text != vm.empresa) {
+           
           if (!vm.empresa.contains('Buscando')) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) nomeFantasiaController.text = vm.empresa;
+             WidgetsBinding.instance.addPostFrameCallback((_) {
+              if(mounted) nomeFantasiaController.text = vm.empresa;
             });
           }
         }
@@ -398,416 +460,198 @@ class _ClientFormState extends State<_ClientForm> {
         return Column(
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24, 
+                vertical: 16
               ),
+
+              decoration: BoxDecoration(
+                color: Color(0x60021D3B),
+                border: Border(
+                  bottom: BorderSide(color: Color(0x60021D3B))
+                ),
+              ),
+
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
                 children: [
                   Text(
-                    widget.isCreating ? 'Novo Cadastro' : 'Editando Cliente',
+                    widget.isCreating 
+                    ? 'Novo Cadastro' 
+                    : 'Editando Cliente',
+
                     style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue[800],
+                      fontSize: 22, 
+                      fontWeight: FontWeight.bold, 
+                      color: Colors.white
                     ),
                   ),
+
                   Row(
                     children: [
                       OutlinedButton(
                         onPressed: widget.onCancel,
-                        child: const Text('Cancelar'),
+
+                        child: const Text('Cancelar', 
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
+
                       const SizedBox(width: 12),
+
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: widget.isCreating
-                              ? Colors.blue[700]
-                              : Colors.orange[700],
+
+                          backgroundColor: widget.isCreating 
+                          ? Colors.blue[700] 
+                          : Colors.orange[700],
+
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
+                            horizontal: 20, 
+                            vertical: 12
                           ),
                         ),
+
                         icon: const Icon(Icons.save),
-                        label: Text(widget.isCreating ? 'Salvar' : 'Atualizar'),
+
+                        label: Text(widget.isCreating 
+                          ? 'Salvar' 
+                          : 'Atualizar'
+                        ),
+
                         onPressed: () => _submitForm(vm),
                       ),
                     ],
-                  ),
+                  )
                 ],
               ),
             ),
+            
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24),
+
                 child: Form(
                   key: _formKey,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
+
+                  child: LayoutBuilder( 
+                    builder: (context, constraints) {
+                      bool isWideScreen = constraints.maxWidth > 800;
+                      
+                      if (isWideScreen) {
+                        return Row( 
                           crossAxisAlignment: CrossAxisAlignment.start,
+
                           children: [
-                            Center(
-                              child: ToggleButtons(
-                                isSelected: [
-                                  !isPessoaJuridica,
-                                  isPessoaJuridica,
-                                ],
-                                onPressed: (index) {
+                            Expanded(
+                              child: _buildPersonalDataFields(
+                                setState: setState,
+                                isPessoaJuridica: isPessoaJuridica,
+
+                                isEditing: widget.isCreating 
+                                ? false 
+                                : true, 
+
+                                vm: vm,
+                                context: context,
+                                selectedDate: selectedDate,
+                                cpfController: cpfController,
+                                cnpjController: cnpjController,
+                                nomeController: nomeController,
+                                emailController: emailController,
+                                telefoneController: telefoneController,
+                                dataNascimentoController: dataNascimentoController,
+
+                                onTypeChanged: (bool value) {
+                                  setState(() => isPessoaJuridica = value);
+                                },
+
+                                onDateChanged: (DateTime date) {
                                   setState(() {
-                                    isPessoaJuridica = index == 1;
+                                    selectedDate = date;
+                                    dataNascimentoController.text = DateFormat('dd/MM/yyyy').format(date);
                                   });
                                 },
-                                borderRadius: BorderRadius.circular(8),
-                                selectedColor: Colors.white,
-                                fillColor: Colors.blue[700],
-                                children: const [
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                    ),
-                                    child: Text("CPF"),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                    ),
-                                    child: Text("CNPJ"),
-                                  ),
-                                ],
                               ),
                             ),
-                            const SizedBox(height: 24),
 
-                            const Text(
-                              "Dados Principais",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey,
+                            const SizedBox(width: 24),
+                            
+                            Expanded(
+                              child: _buildAddressAndDependentFields(
+                                vm: vm,
+                                context: context,
+                                cepController: cepController,
+                                cargoController: cargoController,
+                                numeroController: numeroController,
+                                bairroController: bairroController,
+                                cidadeController: cidadeController,
+                                estadoController: estadoController,
+                                isPessoaJuridica: isPessoaJuridica,
+                                logradouroController: logradouroController,
+                                complementoController: complementoController,
+                                nomeFantasiaController: nomeFantasiaController,
                               ),
-                            ),
-                            const Divider(),
-                            const SizedBox(height: 16),
-
-                            if (isPessoaJuridica)
-                              TextFormField(
-                                controller: cnpjController,
-                                decoration: InputDecoration(
-                                  labelText: 'CNPJ',
-                                  suffixIcon: vm.empresa == 'Buscando...'
-                                      ? const Padding(
-                                          padding: EdgeInsets.all(12.0),
-                                          child: SizedBox(
-                                            width: 20,
-                                            height: 20,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                            ),
-                                          ),
-                                        )
-                                      : IconButton(
-                                          icon: const Icon(
-                                            Icons.search,
-                                            color: Colors.blue,
-                                          ),
-                                          onPressed: () => vm.searchCnpj(
-                                            cnpjController.text,
-                                          ),
-                                        ),
-                                  border: const OutlineInputBorder(),
-                                ),
-                                keyboardType: TextInputType.number,
-                                validator: (v) =>
-                                    isPessoaJuridica && (v == null || v.isEmpty)
-                                    ? 'Obrigatório'
-                                    : null,
-                              )
-                            else
-                              TextFormField(
-                                controller: cpfController,
-                                decoration: const InputDecoration(
-                                  labelText: 'CPF',
-                                  border: OutlineInputBorder(),
-                                ),
-                                validator: (v) =>
-                                    !isPessoaJuridica &&
-                                        (v == null || v.isEmpty)
-                                    ? 'Obrigatório'
-                                    : null,
-                                enabled: widget.isCreating,
-                              ),
-
-                            const SizedBox(height: 16),
-
-                            TextFormField(
-                              controller: nomeController,
-                              decoration: InputDecoration(
-                                labelText: isPessoaJuridica
-                                    ? 'Razão Social'
-                                    : 'Nome Completo',
-                                border: const OutlineInputBorder(),
-                              ),
-                              validator: (v) =>
-                                  v!.isEmpty ? 'Obrigatório' : null,
-                            ),
-
-                            const SizedBox(height: 16),
-
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: InkWell(
-                                    onTap: () async {
-                                      final picked = await showDatePicker(
-                                        context: context,
-                                        initialDate:
-                                            selectedDate ?? DateTime.now(),
-                                        firstDate: DateTime(1900),
-                                        lastDate: DateTime.now(),
-                                      );
-                                      if (picked != null) {
-                                        setState(() {
-                                          selectedDate = picked;
-                                          dataNascimentoController.text =
-                                              DateFormat(
-                                                'dd/MM/yyyy',
-                                              ).format(picked);
-                                        });
-                                      }
-                                    },
-                                    child: InputDecorator(
-                                      decoration: InputDecoration(
-                                        labelText: isPessoaJuridica
-                                            ? 'Data Fundação'
-                                            : 'Data Nascimento',
-                                        border: const OutlineInputBorder(),
-                                        suffixIcon: const Icon(
-                                          Icons.calendar_today,
-                                        ),
-                                      ),
-                                      child: Text(
-                                        dataNascimentoController.text.isEmpty
-                                            ? 'Selecione'
-                                            : dataNascimentoController.text,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: TextFormField(
-                                    controller: telefoneController,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Telefone',
-                                      border: OutlineInputBorder(),
-                                    ),
-                                    keyboardType: TextInputType.phone,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            TextFormField(
-                              controller: emailController,
-                              decoration: const InputDecoration(
-                                labelText: 'E-mail',
-                                border: OutlineInputBorder(),
-                              ),
-                              keyboardType: TextInputType.emailAddress,
                             ),
                           ],
-                        ),
-                      ),
-
-                      const SizedBox(width: 32),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        );
+                      } else {
+                        return Column(
                           children: [
-                            const Text(
-                              "Endereço",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            const Divider(),
-                            const SizedBox(height: 16),
+                            _buildPersonalDataFields(
+                              setState: setState,
+                              isPessoaJuridica: isPessoaJuridica,
 
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  flex: 2,
-                                  child: TextFormField(
-                                    controller: cepController,
-                                    decoration: InputDecoration(
-                                      labelText: 'CEP',
-                                      border: const OutlineInputBorder(),
-                                      suffixIcon: IconButton(
-                                        icon: const Icon(Icons.search),
-                                        onPressed: () =>
-                                            vm.searchCep(cepController.text),
-                                      ),
-                                    ),
-                                    keyboardType: TextInputType.number,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  flex: 3,
-                                  child: TextFormField(
-                                    controller: logradouroController,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Logradouro',
-                                      border: OutlineInputBorder(),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Expanded(
-                                  flex: 1,
-                                  child: TextFormField(
-                                    controller: numeroController,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Número',
-                                      border: OutlineInputBorder(),
-                                    ),
-                                    keyboardType: TextInputType.number,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  flex: 2,
-                                  child: TextFormField(
-                                    controller: bairroController,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Bairro',
-                                      border: OutlineInputBorder(),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: TextFormField(
-                                    controller: cidadeController,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Cidade',
-                                      border: OutlineInputBorder(),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: TextFormField(
-                                    controller: estadoController,
-                                    decoration: const InputDecoration(
-                                      labelText: 'UF',
-                                      border: OutlineInputBorder(),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            TextFormField(
-                              controller: complementoController,
-                              decoration: const InputDecoration(
-                                labelText: 'Complemento',
-                                border: OutlineInputBorder(),
-                              ),
+                              isEditing: widget.isCreating 
+                              ? false 
+                              : true,
+
+                              vm: vm,
+                              context: context,
+                              selectedDate: selectedDate,
+                              cpfController: cpfController,
+                              cnpjController: cnpjController,
+                              nomeController: nomeController,
+                              emailController: emailController,
+                              telefoneController: telefoneController,
+                              dataNascimentoController: dataNascimentoController,
+
+                              onTypeChanged: (bool value) {
+                                setState(() => isPessoaJuridica = value);
+                              },
+
+                              onDateChanged: (DateTime date) {
+                                setState(() {
+                                  selectedDate = date;
+                                  dataNascimentoController.text = DateFormat('dd/MM/yyyy').format(date);
+                                });
+                              },
                             ),
 
-                            if (!isPessoaJuridica) ...[
-                              const SizedBox(height: 24),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    "Dependentes",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  TextButton.icon(
-                                    onPressed: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (ctx) => const Dialog(
-                                          child: DependentAddModal(),
-                                        ),
-                                      );
-                                    },
-                                    icon: const Icon(Icons.add),
-                                    label: const Text("Adicionar"),
-                                  ),
-                                ],
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.grey.shade300,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Column(
-                                  children: vm.tempDependentes.isEmpty
-                                      ? [
-                                          const Padding(
-                                            padding: EdgeInsets.all(16.0),
-                                            child: Text("Nenhum dependente."),
-                                          ),
-                                        ]
-                                      : vm.tempDependentes
-                                            .map(
-                                              (d) => ListTile(
-                                                leading: const Icon(
-                                                  Icons.child_care,
-                                                ),
-                                                title: Text(d.nome),
-                                                subtitle: Text(
-                                                  '${d.parentesco} - ${DateFormat('dd/MM/yyyy').format(d.dataNascimento)}',
-                                                ),
-                                                trailing: IconButton(
-                                                  icon: const Icon(
-                                                    Icons.delete,
-                                                    color: Colors.red,
-                                                    size: 20,
-                                                  ),
-                                                  onPressed: () =>
-                                                      vm.removeTempDependent(
-                                                        d.idDependente,
-                                                      ),
-                                                ),
-                                              ),
-                                            )
-                                            .toList(),
-                                ),
-                              ),
-                            ],
-                            const SizedBox(height: 50),
+                            const SizedBox(height: 20),
+                            const Divider(thickness: 2),
+                            const SizedBox(height: 20),
+
+                            _buildAddressAndDependentFields(
+                              vm: vm,
+                              context: context,
+                              cepController: cepController,
+                              cargoController: cargoController,
+                              numeroController: numeroController,
+                              bairroController: bairroController,
+                              cidadeController: cidadeController,
+                              estadoController: estadoController,
+                              isPessoaJuridica: isPessoaJuridica,
+                              logradouroController: logradouroController,
+                              complementoController: complementoController,
+                              nomeFantasiaController: nomeFantasiaController,
+                            ),
                           ],
-                        ),
-                      ),
-                    ],
+                        );
+                      }
+                    }
                   ),
                 ),
               ),
@@ -820,38 +664,33 @@ class _ClientFormState extends State<_ClientForm> {
 
   Future<void> _submitForm(ClientViewModel vm) async {
     if (_formKey.currentState!.validate() && selectedDate != null) {
-      final documentoFinal = isPessoaJuridica
-          ? cnpjController.text.trim()
-          : cpfController.text.trim();
-
+      final documentoFinal = isPessoaJuridica 
+      ? cnpjController.text.trim() 
+      : cpfController.text.trim();
+      
       try {
         if (widget.isCreating) {
           await vm.addNewClient(
-            nome: nomeController.text.trim(),
             cpf: documentoFinal,
             dataNascimento: selectedDate!,
-            telefone: telefoneController.text.trim(),
-            email: emailController.text.trim(),
             cep: cepController.text.trim(),
-            logradouro: logradouroController.text.trim(),
+            nome: nomeController.text.trim(),
+            email: emailController.text.trim(),
             numero: numeroController.text.trim(),
             bairro: bairroController.text.trim(),
             cidade: cidadeController.text.trim(),
             estado: estadoController.text.trim(),
-            complemento: complementoController.text.trim().isEmpty
-                ? null
-                : complementoController.text.trim(),
-            empresaCnpj: nomeFantasiaController.text.trim().isEmpty
-                ? null
-                : nomeFantasiaController.text.trim(),
-            cargo: cargoController.text.trim().isEmpty
-                ? null
-                : cargoController.text.trim(),
+            telefone: telefoneController.text.trim(),
+            logradouro: logradouroController.text.trim(),
+            cargo: cargoController.text.trim().isEmpty ? null : cargoController.text.trim(),
+            complemento: complementoController.text.trim().isEmpty ? null : complementoController.text.trim(),
+            empresaCnpj: nomeFantasiaController.text.trim().isEmpty ? null : nomeFantasiaController.text.trim(),
           );
+
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text("Cliente Salvo"),
+                content: Text("Cadastro criado"), 
                 backgroundColor: Colors.green,
               ),
             );
@@ -859,60 +698,485 @@ class _ClientFormState extends State<_ClientForm> {
           }
         } else {
           final client = widget.client!;
-          client.nome = nomeController.text.trim();
           client.cpf = documentoFinal;
           client.dataNascimento = selectedDate!;
-          client.telefone = telefoneController.text.trim();
-          client.email = emailController.text.trim();
           client.cep = cepController.text.trim();
-          client.logradouro = logradouroController.text.trim();
+          client.nome = nomeController.text.trim();
+          client.email = emailController.text.trim();
           client.numero = numeroController.text.trim();
           client.bairro = bairroController.text.trim();
           client.cidade = cidadeController.text.trim();
           client.estado = estadoController.text.trim();
-          client.complemento = complementoController.text.trim().isEmpty
-              ? null
-              : complementoController.text.trim();
-          client.empresaCnpj = nomeFantasiaController.text.trim().isEmpty
-              ? null
-              : nomeFantasiaController.text.trim();
-          client.cargo = cargoController.text.trim().isEmpty
-              ? null
-              : cargoController.text.trim();
-
+          client.telefone = telefoneController.text.trim();
+          client.logradouro = logradouroController.text.trim();
+          client.cargo = cargoController.text.trim().isEmpty ? null : cargoController.text.trim();
+          client.complemento = complementoController.text.trim().isEmpty ? null : complementoController.text.trim();
+          client.empresaCnpj = nomeFantasiaController.text.trim().isEmpty ? null : nomeFantasiaController.text.trim();
+          
           client.dependentes = vm.tempDependentes.map((d) {
             d.idCliente = client.idCliente;
             return d;
           }).toList();
 
           await vm.updateClient(client);
-
+          
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text("Cliente Atualizado"),
+                content: Text("Cadastro atualizado"), 
                 backgroundColor: Colors.green,
               ),
             );
+
             widget.onSuccess();
+
           }
         }
+
       } catch (e) {
-        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Erro ao salvar: $e (╬▔皿▔)╯"),
+            content: Text("Erro ao salvar: $e"), 
             backgroundColor: Colors.red,
           ),
         );
       }
+
     } else if (selectedDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Data obrigatória"),
+          content: Text("Data obrigatória"), 
           backgroundColor: Colors.red,
         ),
       );
     }
+  }
+
+  
+
+  Widget _buildPersonalDataFields({
+    required bool isEditing,
+    required ClientViewModel vm,
+    required StateSetter setState,
+    required BuildContext context,
+    required bool isPessoaJuridica,
+    required DateTime? selectedDate,
+    required Function(bool) onTypeChanged,
+    required Function(DateTime) onDateChanged,
+    required TextEditingController cpfController,
+    required TextEditingController cnpjController,
+    required TextEditingController nomeController,
+    required TextEditingController emailController,
+    required TextEditingController telefoneController,
+    required TextEditingController dataNascimentoController,
+  }) {
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Center(
+          child: ToggleButtons(
+            isSelected: [!isPessoaJuridica, isPessoaJuridica],
+            onPressed: (index) => onTypeChanged(index == 1),
+            borderRadius: BorderRadius.circular(8),
+            selectedColor: Colors.white,
+            fillColor: Colors.blue[700],
+
+            children: const [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16), 
+                child: Text("CPF", 
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16), 
+                  child: Text("CNPJ", 
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 20),
+        const Text("Dados Pessoais", 
+          style: TextStyle(
+            fontSize: 16, 
+            fontWeight: FontWeight.bold, 
+            color: Colors.white,
+          ),
+        ),
+
+        const Divider(),
+        
+        if (isPessoaJuridica)
+          TextFormField(
+            controller: cnpjController,
+
+            decoration: InputDecoration(
+              labelText: 'CNPJ',
+              border: const OutlineInputBorder(),
+              suffixIcon: vm.empresa == 'Buscando...'
+
+              ? const Padding(
+                padding: EdgeInsets.all(12), 
+
+                child: SizedBox(
+                  width: 20, 
+                  height: 20, 
+                  child: CircularProgressIndicator(strokeWidth: 2)
+                )
+              )
+
+              : IconButton(
+                icon: const Icon(
+                  Icons.search, 
+                  color: Colors.white
+                ),
+
+                onPressed: () => vm.searchCnpj(cnpjController.text),
+              ),
+
+              labelStyle: TextStyle(color: Colors.white)
+            ),
+
+            validator: (v) => isPessoaJuridica && (v == null || v.isEmpty) 
+            ? 'Obrigatório' 
+            : null,
+
+            style: TextStyle(color: Colors.white),
+          ) else
+
+          TextFormField(
+            controller: cpfController,
+            decoration: const InputDecoration(
+              labelText: 'CPF', 
+              border: OutlineInputBorder(),
+              labelStyle: TextStyle(color: Colors.white),
+            ),
+            
+            validator: (v) => !isPessoaJuridica && (v == null || v.isEmpty) 
+            ? 'Obrigatório' 
+            : null,
+
+            enabled: !isEditing, 
+            style: TextStyle(color: Colors.white),
+          ),
+
+        const SizedBox(height: 15),
+
+        TextFormField(
+          controller: nomeController,
+
+          decoration: InputDecoration(
+            labelText: isPessoaJuridica 
+            ? 'Razão Social' 
+            : 'Nome Completo',
+
+            border: const OutlineInputBorder(),
+            labelStyle: TextStyle(color: Colors.white)
+          ),
+
+          validator: (v) => v!.isEmpty 
+          ? 'Obrigatório' 
+          : null,
+
+          style: TextStyle(color: Colors.white),
+        ),
+
+        const SizedBox(height: 15),
+
+        InkWell(
+          onTap: () async {
+            final picked = await showDatePicker(
+              context: context,
+              initialDate: selectedDate ?? DateTime.now(),
+              firstDate: DateTime(1800),
+              lastDate: DateTime.now(),
+            );
+
+            if (picked != null) onDateChanged(picked);
+          },
+
+          child: InputDecorator(
+            decoration: InputDecoration(
+              labelText: isPessoaJuridica 
+              ? 'Data Fundação' 
+              : 'Data Nascimento',
+
+              border: const OutlineInputBorder(),
+              suffixIcon: const Icon(Icons.calendar_today),
+              labelStyle: TextStyle(color: Colors.white),
+            ),
+
+            child: Text(dataNascimentoController.text.isEmpty 
+              ? 'Selecione' 
+              : dataNascimentoController.text, 
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 15),
+
+        TextFormField(
+          controller: telefoneController,
+
+          decoration: const InputDecoration(
+            labelText: 'Telefone', 
+            border: OutlineInputBorder(),
+            labelStyle: TextStyle(color: Colors.white),
+          ),
+
+          style: TextStyle(color: Colors.white),
+        ),
+
+        const SizedBox(height: 15),
+
+        TextFormField(
+          controller: emailController,
+
+          decoration: const InputDecoration(
+            labelText: 'E-mail', 
+            border: OutlineInputBorder(),
+            labelStyle: TextStyle(color: Colors.white),
+          ),
+
+          style: TextStyle(color: Colors.white),
+
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAddressAndDependentFields({
+    required ClientViewModel vm,
+    required BuildContext context,
+    required bool isPessoaJuridica,
+    required TextEditingController cepController,
+    required TextEditingController cargoController,
+    required TextEditingController numeroController,
+    required TextEditingController bairroController,
+    required TextEditingController cidadeController,
+    required TextEditingController estadoController,
+    required TextEditingController logradouroController,
+    required TextEditingController complementoController,
+    required TextEditingController nomeFantasiaController,
+  }) {
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+
+      children: [
+        const Text( "Endereço & Detalhes",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+
+        const Divider(),
+
+        Row(
+          children: [
+            Expanded(
+              flex: 2,
+
+              child: TextFormField(
+                controller: cepController,
+
+                decoration: InputDecoration(
+                  labelText: 'CEP',
+                  border: const OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.white),
+
+                  suffixIcon: IconButton(
+                    icon: const Icon(
+                      Icons.search, 
+                      color: Colors.white,
+                    ), 
+
+                    onPressed: () => vm.searchCep(cepController.text),
+                  ),
+                ),
+
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+
+            const SizedBox(width: 10),
+
+            Expanded(
+              flex: 3,
+
+              child: TextFormField(
+                controller: logradouroController,
+
+                decoration: const InputDecoration(
+                  labelText: 'Logradouro', 
+                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.white)
+                ),
+
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 10),
+
+        Row(
+          children: [
+            Expanded(
+              child: TextFormField(
+                controller: numeroController,
+
+                decoration: const InputDecoration(
+                  labelText: 'Número', 
+                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.white)
+                ),
+
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+
+            const SizedBox(width: 10),
+
+            Expanded(
+              flex: 2,
+
+              child: TextFormField(
+                controller: bairroController,
+
+                decoration: const InputDecoration(
+                  labelText: 'Bairro', 
+                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.white)
+                ),
+
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 10),
+
+        Row(
+          children: [
+            Expanded(
+              child: TextFormField(
+                controller: cidadeController,
+
+                decoration: const InputDecoration(
+                  labelText: 'Cidade', 
+                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.white),
+                ),
+
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            
+            const SizedBox(width: 10),
+
+            Expanded(
+              child: TextFormField(
+                controller: estadoController,
+                decoration: const InputDecoration(
+                  labelText: 'UF', 
+                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.white),
+                ),
+
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 10),
+
+        TextFormField(
+          controller: complementoController,
+          decoration: const InputDecoration(
+            labelText: 'Complemento', 
+            border: OutlineInputBorder(),
+            labelStyle: TextStyle(color: Colors.white),
+          ),
+
+          style: TextStyle(color: Colors.white),
+        ),
+        
+        if (!isPessoaJuridica) ...[
+          const SizedBox(height: 20),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+            children: [
+              const Text("Dependentes", 
+                style: TextStyle(
+                  fontSize: 16, 
+                  fontWeight: FontWeight.bold, 
+                  color: Colors.white
+                )
+              ),
+
+              TextButton.icon(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (ctx) => const Dialog(child: DependentAddModal()),
+                  );
+                },
+
+                icon: const Icon(
+                  Icons.add, 
+                  color: Colors.white,
+                ),
+
+                label: const Text("Adicionar", 
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+
+          if (vm.tempDependentes.isNotEmpty)
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Color(0x0007171b)),
+                borderRadius: BorderRadius.circular(8),
+              ),
+
+              child: Column(
+                children: vm.tempDependentes
+
+                .map(
+                  (d) => ListTile(
+                    title: Text(d.nome, 
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    subtitle: Text(d.parentesco),
+                    trailing: IconButton(
+                      icon: const Icon(
+                        Icons.delete, 
+                        color: Colors.red
+                      ),
+                      onPressed: () => vm.removeTempDependent(d.idDependente),
+                    ),
+                  ),
+                ).toList(),
+              ),
+            ),
+        ],
+      ],
+    );
   }
 }

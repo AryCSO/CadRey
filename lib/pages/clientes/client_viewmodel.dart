@@ -17,7 +17,7 @@ class ClientViewModel extends ChangeNotifier {
   String _estado = '';
   String _numero = ''; // Adicionado para mapear com o novo model
   String _empresa = '';
-  String _nomeRazaoSocial = ''; // Adicionado
+  String _nomeRazaoSocial = '';
 
   List<DependentModel> _tempDependentes = [];
 
