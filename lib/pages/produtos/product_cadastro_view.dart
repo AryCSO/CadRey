@@ -1,5 +1,6 @@
 import 'package:cadrey/pages/produtos/Model/product_model.dart';
 import 'package:cadrey/pages/produtos/product_viewmodel.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
@@ -16,13 +17,24 @@ class _ProductCadastroViewState extends State<ProductCadastroView> {
 
   @override
   Widget build(BuildContext context) {
+    MaterialApp(
+    debugShowCheckedModeBanner: false,
+
+    localizationsDelegates: [
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate, 
+    ],
+
+    supportedLocales: [const Locale('pt', 'BR')],
+  );
 
     return Consumer<ProductViewModel>(
       builder: (context, viewModel, child) {
         return Column(
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
               color: Colors.teal[700],
 
               child: Row(

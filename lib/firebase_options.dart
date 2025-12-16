@@ -41,11 +41,11 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'COLE_SUA_API_KEY_ANDROID_AQUI',
-    appId: 'COLE_SEU_APP_ID_ANDROID_AQUI',
+    apiKey: 'AIzaSyAz0ysZHfSHyxpQHqJWMOPIWHScjYVKbBU',
+    appId: '1:814496571300:android:81bdce8da57b32c17e6b31',
     messagingSenderId: 'COLE_SEU_SENDER_ID',
-    projectId: 'COLE_SEU_PROJECT_ID',
-    storageBucket: 'COLE_SEU_STORAGE_BUCKET',
+    projectId: 'cadrey-f8a6f',
+    storageBucket: 'cadrey-f8a6f.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(

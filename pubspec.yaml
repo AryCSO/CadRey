@@ -11,6 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   intl:
   hive:
   hive_flutter:
@@ -26,8 +28,6 @@ dependencies:
   firebase_auth_dart: 
   sidebarx: ^0.17.2
   collapsible_sidebar: 
-  flutter_localizations:
-    sdk: flutter
   
 dev_dependencies:
   flutter_test:

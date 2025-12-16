@@ -1,6 +1,7 @@
 import 'package:cadrey/pages/Dependentes/dependent_add_modal.dart';
 import 'package:cadrey/pages/clientes/Model/client_model.dart';
 import 'package:cadrey/pages/clientes/client_viewmodel.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -19,6 +20,18 @@ class _ClientCadastroViewState extends State<ClientCadastroView> {
 
   @override
   Widget build(BuildContext context) {
+    MaterialApp(
+    debugShowCheckedModeBanner: false,
+
+    localizationsDelegates: [
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate, 
+    ],
+
+    supportedLocales: [const Locale('pt', 'BR')],
+  );
+
     return Consumer<ClientViewModel>(
       builder: (context, viewModel, child) {
         
@@ -26,14 +39,17 @@ class _ClientCadastroViewState extends State<ClientCadastroView> {
           children: [
             
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
               color: Colors.blue[700],
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Gestão de Clientes',
-                    style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                  const Text('Gestão de Clientes',
+                    style: TextStyle(
+                      color: Colors.white, 
+                      fontSize: 20, 
+                      fontWeight: FontWeight.bold
+                    ),
                   ),
                   
                   if (!_isCreatingNew && _selectedClient == null)
@@ -682,9 +698,18 @@ class _ClientFormState extends State<_ClientForm> {
             estado: estadoController.text.trim(),
             telefone: telefoneController.text.trim(),
             logradouro: logradouroController.text.trim(),
-            cargo: cargoController.text.trim().isEmpty ? null : cargoController.text.trim(),
-            complemento: complementoController.text.trim().isEmpty ? null : complementoController.text.trim(),
-            empresaCnpj: nomeFantasiaController.text.trim().isEmpty ? null : nomeFantasiaController.text.trim(),
+            cargo: cargoController.text.trim().isEmpty 
+            ? null 
+            : cargoController.text.trim(),
+
+            complemento: complementoController.text.trim().isEmpty 
+            ? null 
+            : complementoController.text.trim(),
+
+            empresaCnpj: nomeFantasiaController.text.trim().isEmpty 
+            ? null 
+            : nomeFantasiaController.text.trim(),
+
           );
 
           if (mounted) {
@@ -751,9 +776,7 @@ class _ClientFormState extends State<_ClientForm> {
       );
     }
   }
-
   
-
   Widget _buildPersonalDataFields({
     required bool isEditing,
     required ClientViewModel vm,

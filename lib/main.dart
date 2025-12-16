@@ -21,7 +21,8 @@ void main() async {
 
     localizationsDelegates: [
       GlobalMaterialLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate, 
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate, 
     ],
 
     supportedLocales: [const Locale('pt', 'BR')],
@@ -49,7 +50,11 @@ void main() async {
 class CadastreReyApp extends StatelessWidget {
   CadastreReyApp({super.key});
 
-  final _controller = SidebarXController(selectedIndex: 0, extended: true);
+  final _controller = SidebarXController(
+    selectedIndex: 0, 
+    extended: true
+  );
+
   final _key = GlobalKey<ScaffoldState>();
 
   @override
@@ -256,15 +261,15 @@ class DashboardHomeContent extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const SizedBox(height: 30),
 
+        children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
 
+            children: [
               Expanded(
                 flex: 3,
+                
                 child: _buildTotalCard(
                   context,
                   title: 'Total Cadastros',
@@ -283,7 +288,6 @@ class DashboardHomeContent extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   
                   children: [
-                    
                     _buildInfoCard(
                       context,
                       title: 'Clientes',
@@ -338,7 +342,11 @@ class DashboardHomeContent extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
             children: [
-              Icon(icon, size: 48, color: Colors.white),
+              Icon(
+                icon, 
+                size: 48, 
+                color: Colors.white
+              ),
 
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -406,7 +414,12 @@ class DashboardHomeContent extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
               children: [
-                Icon(icon, size: 36, color: color),
+                Icon(
+                  icon, 
+                  size: 36, 
+                  color: color
+                ),
+
                 isLoading
 
                 ? const SizedBox(
@@ -429,7 +442,10 @@ class DashboardHomeContent extends StatelessWidget {
 
             Text(
               title,
-              style: TextStyle(fontSize: 14, color: Colors.white),
+              style: TextStyle(
+                fontSize: 14, 
+                color: Colors.white
+              ),
             ),
           ],
         ),
