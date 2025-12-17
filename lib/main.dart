@@ -197,7 +197,6 @@ class DashboardDrawer extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
             child: Image.asset('assets/images/datafile.png', scale: 3.0,),
           ),
-
         );
       },
 
