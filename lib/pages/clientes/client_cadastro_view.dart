@@ -214,10 +214,10 @@ class _ClientCadastroViewState extends State<ClientCadastroView> {
                                               ),
                                               onPressed: () => _confirmDelete(context, viewModel, client),
                                             ): null,
-                                          ),
-                                        );
-                                      },
-                                    ),
+                                        ),
+                                      );
+                                    },
+                                  ),
                           ),
                         ],
                       ),
@@ -320,13 +320,13 @@ class _ClientCadastroViewState extends State<ClientCadastroView> {
               await viewModel.deleteClient(client);
 
               if (mounted) {
-                Navigator.pop(ctx);
+                Navigator.pop(ctx); // ignore: use_build_context_synchronously
 
                 setState(() {
                   _selectedClient = null; 
                 });
 
-                ScaffoldMessenger.of(context).showSnackBar(
+                ScaffoldMessenger.of(context).showSnackBar( // ignore: use_build_context_synchronously
                   const SnackBar(
                     content: Text('Cliente excluído.'),
                     backgroundColor: Colors.redAccent,
@@ -759,7 +759,7 @@ class _ClientFormState extends State<_ClientForm> {
         }
 
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar( // ignore: use_build_context_synchronously
           SnackBar(
             content: Text("Erro ao salvar: $e"), 
             backgroundColor: Colors.red,

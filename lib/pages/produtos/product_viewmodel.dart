@@ -61,13 +61,13 @@ class ProductViewModel extends ChangeNotifier {
     );
 
     await _service.addProduct(newProduct);
-    await loadProducts();                                     // Recarrega do Firestore
+    await loadProducts(); 
   }
 
   Future<void> deleteProduct(ProductModel product) async {
     await _service.deleteProduct(product);
     
-    _products.removeWhere((p) => p.id == product.id);         // Remove localmente ou recarrega
+    _products.removeWhere((p) => p.id == product.id);
     notifyListeners();
   }
 

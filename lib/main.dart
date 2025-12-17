@@ -54,7 +54,6 @@ class CadastreReyApp extends StatelessWidget {
     selectedIndex: 0, 
     extended: true
   );
-
   final _key = GlobalKey<ScaffoldState>();
 
   @override
@@ -208,7 +207,7 @@ class DashboardDrawer extends StatelessWidget {
           label: 'Home'
         ),
         SidebarXItem(
-          icon: Icons.inventory, 
+          icon: Icons.inventory,
           label: 'Produtos'
         ),
         SidebarXItem(

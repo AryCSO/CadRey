@@ -1,6 +1,5 @@
 import 'package:cadrey/pages/produtos/Model/product_model.dart';
 import 'package:cadrey/pages/produtos/product_viewmodel.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
@@ -17,24 +16,16 @@ class _ProductCadastroViewState extends State<ProductCadastroView> {
 
   @override
   Widget build(BuildContext context) {
-    MaterialApp(
-    debugShowCheckedModeBanner: false,
-
-    localizationsDelegates: [
-      GlobalMaterialLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate,
-      GlobalCupertinoLocalizations.delegate, 
-    ],
-
-    supportedLocales: [const Locale('pt', 'BR')],
-  );
 
     return Consumer<ProductViewModel>(
       builder: (context, viewModel, child) {
         return Column(
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16, 
+                vertical: 12
+              ),
               color: Colors.teal[700],
 
               child: Row(
@@ -43,7 +34,7 @@ class _ProductCadastroViewState extends State<ProductCadastroView> {
                 children: [
                   const Text('Gestão de Produtos',
                     style: TextStyle(
-                      color: Colors.white, 
+                      color: Colors.white,
                       fontSize: 20, 
                       fontWeight: FontWeight.bold
                     ),
@@ -143,7 +134,11 @@ class _ProductCadastroViewState extends State<ProductCadastroView> {
 
                                                 child: Text(
                                                   product.estoque.toString(),
-                                                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 12),
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.bold, 
+                                                    color: Colors.white, 
+                                                    fontSize: 12
+                                                  ),
                                                 ),
                                               ),
 
@@ -158,7 +153,7 @@ class _ProductCadastroViewState extends State<ProductCadastroView> {
                                               ),
 
                                               subtitle: Text(
-                                                'R\$ ${product.preco.toStringAsFixed(2)}', 
+                                                'CódBarras: ${product.cdBarras.characters}', 
                                                 style: TextStyle(color: Colors.white),
                                               ),
                                               
@@ -284,10 +279,10 @@ class _ProductCadastroViewState extends State<ProductCadastroView> {
               await viewModel.deleteProduct(product);
 
               if (mounted) {
-                Navigator.pop(ctx);
+                Navigator.pop(ctx); // ignore: use_build_context_synchronously
                 setState(() => _selectedProduct = null);
 
-                ScaffoldMessenger.of(context).showSnackBar(
+                ScaffoldMessenger.of(context).showSnackBar( // ignore: use_build_context_synchronously
                   const SnackBar(
                     content: Text('Produto excluído'), 
                     backgroundColor: Colors.redAccent
@@ -303,7 +298,7 @@ class _ProductCadastroViewState extends State<ProductCadastroView> {
           ),
         ],
       ),
-    );
+    ); 
   }
 }
 
@@ -370,7 +365,10 @@ class _ProductFormState extends State<_ProductForm> {
         return Column(
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24, 
+                vertical: 16
+              ),
 
               decoration: BoxDecoration(
                 color: Color(0x60021D3B),
@@ -412,7 +410,10 @@ class _ProductFormState extends State<_ProductForm> {
                           ? Colors.teal[700] 
                           : Colors.orange[700],
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20, 
+                            vertical: 12
+                          ),
                         ),
 
                         icon: const Icon(Icons.save),
@@ -466,7 +467,9 @@ class _ProductFormState extends State<_ProductForm> {
 
                               ),
 
-                              validator: (v) => v!.isEmpty ? 'Obrigatório' : null,
+                              validator: (v) => v!.isEmpty 
+                              ? 'Obrigatório' 
+                              : null,
 
                               enabled: widget.isCreating,
 
@@ -691,7 +694,7 @@ class _ProductFormState extends State<_ProductForm> {
           }
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar( // ignore: use_build_context_synchronously
           SnackBar(
             content: Text("Erro: $e"), 
             backgroundColor: Colors.red
