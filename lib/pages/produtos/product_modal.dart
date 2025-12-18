@@ -5,17 +5,19 @@ import 'package:provider/provider.dart';
 
 void cadProductModal(BuildContext context, {ProductModel? product}) {
   showModalBottomSheet(
-    context: context, 
-    backgroundColor:Color(0xFF555585),
+    context: context,
+    
+    backgroundColor: const Color(0xFF2E2E48),
     isDismissible: true,
     isScrollControlled: true,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(30))
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
     ),
     builder: (context) {
       return CadProductModaltela(
-        isCreating: true, 
-        onCancel: () {}, 
+        isCreating: product == null, 
+        product: product,
+        onCancel: () {},
         onSuccess: () {},
       );
     },
@@ -42,6 +44,8 @@ class CadProductModaltela extends StatefulWidget {
 
 class _CadProductModaltelaState extends State<CadProductModaltela> {
   final _formKey = GlobalKey<FormState>();
+  
+  
   late TextEditingController cdBarrasController;
   late TextEditingController nomeController;
   late TextEditingController precoController;
@@ -84,267 +88,245 @@ class _CadProductModaltelaState extends State<CadProductModaltela> {
       builder: (context, vm, child) {
         return Column(
           children: [
+            
             Container(
               padding: const EdgeInsets.symmetric(
-                horizontal: 28, 
+                horizontal: 28,
                 vertical: 14,
               ),
-
-              decoration: BoxDecoration(
-                color: Color(0x60021D3B),
-                border: Border(bottom: BorderSide(color: Color(0x00FFFFFF))),
+              decoration: const BoxDecoration(
+                
+                color: Color(0xFF021D3B),
+                border: Border(
+                  bottom: BorderSide(color: Color(0xFF021D3B)), 
+                ),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
               ),
-
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
                 children: [
                   Text(
-                    widget.isCreating 
-                    ? 'Novo Produto' 
-                    : 'Editando Produto',
-                    style: TextStyle(
-                      fontSize: 22, 
-                      fontWeight: FontWeight.bold, 
-                      color: Colors.white
+                    widget.isCreating ? 'Novo Produto' : 'Editando Produto',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
-
                   Row(
                     children: [
+
                       OutlinedButton(
                         onPressed: () {
                           Navigator.pop(context);
                         },
-
-                        child: const Text('Cancelar', 
-                          style: TextStyle(
-                            color: Colors.white
+                        style: OutlinedButton.styleFrom(
+                           side: const BorderSide(color: Colors.white54),
+                        ),
+                        child: const Text(
+                          'Cancelar',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: widget.isCreating
+                              ? Colors.teal[700]
+                              : Colors.orange[700],
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
                           ),
-                        )
-                        
+                        ),
+                        icon: const Icon(Icons.save),
+                        label: Text(widget.isCreating ? 'Salvar' : 'Atualizar'),
+                        onPressed: () => _submitForm(vm),
                       ),
 
                       const SizedBox(width: 12),
-
-                      ElevatedButton.icon(
+                      
+                      ? widget.isCreating 
+                      ? null
+                      : ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: widget.isCreating 
-                          ? Colors.teal[700] 
-                          : Colors.orange[700],
+                          backgroundColor: widget.isCreating
+                              ? const Color(0xFF05244D)
+                              : const Color(0xFFF5000C),
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 20, 
-                            vertical: 12
+                            horizontal: 20,
+                            vertical: 12,
                           ),
                         ),
-
-                        icon: const Icon(Icons.save),
-                        label: Text(widget.isCreating 
-                          ? 'Salvar' 
-                          : 'Atualizar'
+                        icon: Icon(widget.isCreating 
+                          ? null 
+                          : Icons.delete
                         ),
-
+                        label: Text(widget.isCreating 
+                          ? '' 
+                          : 'excluir'
+                        ),
                         onPressed: () => _submitForm(vm),
                       ),
+
                     ],
                   )
                 ],
               ),
             ),
+
             
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24),
-
                 child: Form(
                   key: _formKey,
-
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
-
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-
-                          children: [
-                            const Text("Informações", 
-                              style: TextStyle(
-                                fontSize: 18, 
-                                fontWeight: FontWeight.bold, 
-                                color: Colors.white
-                              )
-                            ),
-
-                            const Divider(),
-                            const SizedBox(height: 16),
-
-                            TextFormField(
-                              controller: cdBarrasController,
-
-                              decoration: const InputDecoration(
-                                labelText: 'Código de Barras', 
-                                border: OutlineInputBorder(), 
-                                labelStyle: TextStyle(color: Colors.white)
-
-                              ),
-
-                              validator: (v) => v!.isEmpty 
-                              ? 'Obrigatório' 
-                              : null,
-
-                              enabled: widget.isCreating,
-
-                              style: TextStyle(color: Colors.white),
-                            ),
-
-                            const SizedBox(height: 16),
-
-                            TextFormField(
-                              controller: nomeController,
-
-                              decoration: const InputDecoration(
-                                labelText: 'Nome', 
-                                border: OutlineInputBorder(), 
-                                labelStyle: TextStyle(color: Colors.white)
-                              ),
-
-                              validator: (v) => v!.isEmpty 
-                              ? 'Obrigatório' 
-                              : null,
-
-                              style: TextStyle(color: Colors.white),
-                            ),
-
-                            const SizedBox(height: 16),
-
-                            TextFormField(
-                              controller: descricaoController,
-
-                              decoration: const InputDecoration(
-                                labelText: 'Descrição', 
-                                border: OutlineInputBorder(),
-                                labelStyle: TextStyle(color: Colors.white),
-                              ),
-
-                              maxLines: 3,
-
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(width: 32),
                       
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-
                           children: [
-                            const Text("Estoque & Valores", 
+                            const Text(
+                              "Informações",
                               style: TextStyle(
-                                fontSize: 18, 
-                                fontWeight: FontWeight.bold, 
-                                color: Colors.white
-                              )
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
-
-                            const Divider(),
+                            const Divider(color: Colors.white24),
                             const SizedBox(height: 16),
+                            TextFormField(
+                              controller: cdBarrasController,
+                              decoration: const InputDecoration(
+                                labelText: 'Código de Barras',
+                                border: OutlineInputBorder(),
+                                labelStyle: TextStyle(color: Colors.white),
+                              ),
+                              validator: (v) =>
+                                  v!.isEmpty ? 'Obrigatório' : null,
+                              
+                              
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                            const SizedBox(height: 16),
+                            TextFormField(
+                              controller: nomeController,
+                              decoration: const InputDecoration(
+                                labelText: 'Nome',
+                                border: OutlineInputBorder(),
+                                labelStyle: TextStyle(color: Colors.white),
+                              ),
+                              validator: (v) =>
+                                  v!.isEmpty ? 'Obrigatório' : null,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                            const SizedBox(height: 16),
+                            TextFormField(
+                              controller: descricaoController,
+                              decoration: const InputDecoration(
+                                labelText: 'Descrição',
+                                border: OutlineInputBorder(),
+                                labelStyle: TextStyle(color: Colors.white),
+                              ),
+                              maxLines: 3,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        ),
+                      ),
+                      
+                      const SizedBox(width: 32),
 
+                      
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Estoque & Valores",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const Divider(color: Colors.white24),
+                            const SizedBox(height: 16),
                             Row(
                               children: [
                                 Expanded(
                                   child: TextFormField(
                                     controller: precoController,
-
                                     decoration: const InputDecoration(
-                                      labelText: 'Preço', 
-                                      border: OutlineInputBorder(),
-                                      labelStyle: TextStyle(color: Colors.white)
-                                    ),
-
-                                    keyboardType: TextInputType.number,
-
-                                    validator: (v) => v!.isEmpty 
-                                    ? 'Obrigatório' 
-                                    : null,
-
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ),
-
-                                const SizedBox(width: 16),
-
-                                Expanded(
-                                  child: TextFormField(
-                                    controller: estoqueController,
-
-                                    decoration: const InputDecoration(
-                                      labelText: 'Estoque', 
+                                      labelText: 'Preço',
                                       border: OutlineInputBorder(),
                                       labelStyle: TextStyle(color: Colors.white),
                                     ),
-
+                                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                    validator: (v) =>
+                                        v!.isEmpty ? 'Obrigatório' : null,
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: estoqueController,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Estoque',
+                                      border: OutlineInputBorder(),
+                                      labelStyle: TextStyle(color: Colors.white),
+                                    ),
                                     keyboardType: TextInputType.number,
-                                    style: TextStyle(color: Colors.white),
+                                    style: const TextStyle(color: Colors.white),
                                   ),
                                 ),
                               ],
                             ),
-
                             const SizedBox(height: 16),
-
                             Row(
                               children: [
                                 Expanded(
                                   child: TextFormField(
                                     controller: categoriaController,
-
                                     decoration: const InputDecoration(
-                                      labelText: 'Categoria', 
-                                      border: OutlineInputBorder(), 
-                                      labelStyle: TextStyle(color: Colors.white,)
-                                    ),
-
-                                    style: TextStyle(color: Colors.white),
-
-                                  ),
-                                ),
-
-                                const SizedBox(width: 16),
-
-                                Expanded(
-                                  child: TextFormField(
-                                    controller: marcaController,
-
-                                    decoration: const InputDecoration(
-                                      labelText: 'Marca', 
+                                      labelText: 'Categoria',
                                       border: OutlineInputBorder(),
                                       labelStyle: TextStyle(color: Colors.white),
                                     ),
-
-                                    style: TextStyle(color: Colors.white),
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: marcaController,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Marca',
+                                      border: OutlineInputBorder(),
+                                      labelStyle: TextStyle(color: Colors.white),
+                                    ),
+                                    style: const TextStyle(color: Colors.white),
                                   ),
                                 ),
                               ],
                             ),
 
-                            const SizedBox(height: 16),
-
                             TextFormField(
                               controller: pesoController,
-
                               decoration: const InputDecoration(
-                                labelText: 'Peso', 
+                                labelText: 'Peso',
                                 border: OutlineInputBorder(),
-                                labelStyle: TextStyle(color: Colors.white)
+                                labelStyle: TextStyle(color: Colors.white),
                               ),
-
-                              keyboardType: TextInputType.number,
-                              style: TextStyle(color: Colors.white),
+                              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ],
                         ),
@@ -364,6 +346,7 @@ class _CadProductModaltelaState extends State<CadProductModaltela> {
     if (_formKey.currentState!.validate()) {
       try {
         final newNome = nomeController.text.trim();
+        
         final newPreco = double.tryParse(precoController.text.replaceAll(',', '.')) ?? 0.0;
         final newEstoque = int.tryParse(estoqueController.text) ?? 0;
         final newDescricao = descricaoController.text.trim();
@@ -386,12 +369,12 @@ class _CadProductModaltelaState extends State<CadProductModaltela> {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text("Produto criado"), 
-                backgroundColor: Colors.teal
-              )
+                content: Text("Produto criado"),
+                backgroundColor: Colors.teal,
+              ),
             );
-
             widget.onSuccess();
+            Navigator.pop(context); 
           }
         } else {
           final product = widget.product!;
@@ -402,27 +385,31 @@ class _CadProductModaltelaState extends State<CadProductModaltela> {
           product.categoria = newCategoria;
           product.marca = newMarca;
           product.peso = newPeso;
+          
+          
 
           await vm.updateProduct(product);
 
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text("Produto atualizado"), 
-                backgroundColor: Colors.teal
-              )
+                content: Text("Produto atualizado"),
+                backgroundColor: Colors.teal,
+              ),
             );
-
             widget.onSuccess();
+            Navigator.pop(context); 
           }
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar( // ignore: use_build_context_synchronously
-          SnackBar(
-            content: Text("Erro: $e"), 
-            backgroundColor: Colors.red
-          )
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Erro: $e"),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
     }
   }

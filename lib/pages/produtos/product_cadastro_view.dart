@@ -38,7 +38,7 @@ class _ProductCadastroViewState extends State<ProductCadastroView> {
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20, 
-                      fontWeight: FontWeight.bold
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
 
@@ -158,7 +158,7 @@ class _ProductCadastroViewState extends State<ProductCadastroView> {
                                               ),
 
                                               subtitle: Text(
-                                                'CódBarras: ${product.cdBarras.characters}', 
+                                                'CódBarras: ${product.cdBarras.characters}',
                                                 style: TextStyle(color: Colors.white),
                                               ),
                                               
@@ -177,7 +177,8 @@ class _ProductCadastroViewState extends State<ProductCadastroView> {
                                                   ),
 
                                                   onPressed: () => _confirmDelete(context, viewModel, product),
-                                                  ): null,
+                                                  )
+                                                : null,
                                             ),
                                           );
                                         },

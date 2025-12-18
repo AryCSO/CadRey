@@ -15,7 +15,7 @@ class ClientCadastroView extends StatefulWidget {
 class _ClientCadastroViewState extends State<ClientCadastroView> {
   
   ClientModel? _selectedClient;
-  bool _isCreatingNew = false; 
+  final bool _isCreatingNew = false; 
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +60,7 @@ class _ClientCadastroViewState extends State<ClientCadastroView> {
                     ElevatedButton.icon(
                       onPressed: () {
                         setState(() {
-                          cadClientModal(context, product: null);
+                          cadClientModal(context);
                         });
 
                         viewModel.clearTempDependents(); 
@@ -191,8 +191,7 @@ class _ClientCadastroViewState extends State<ClientCadastroView> {
 
                                             onTap: () {
                                               setState(() {
-                                                _selectedClient = client;
-                                                _isCreatingNew = false;
+                                                cadClientModal(context, client: client);
                                               });
                                                 
                                               viewModel.clearTempDependents();

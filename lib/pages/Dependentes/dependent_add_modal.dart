@@ -1,8 +1,24 @@
+import 'package:cadrey/pages/clientes/Model/client_model.dart';
 import 'package:cadrey/pages/clientes/client_viewmodel.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+void cadDependentModal(BuildContext context, {ClientModel? dependente}) {
+  showModalBottomSheet(
+    context: context,
+    
+    backgroundColor: const Color(0xFF2E2E48),
+    isDismissible: true,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+    ),
+    builder: (context) {
+      return DependentAddModal();
+    },
+  );
+}
 
 class DependentAddModal extends StatelessWidget {
   const DependentAddModal({super.key});
