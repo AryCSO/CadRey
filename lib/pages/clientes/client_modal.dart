@@ -5,11 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-
 void cadClientModal(BuildContext context, {ClientModel? client}) {
   showModalBottomSheet(
     context: context,
-    
     backgroundColor: const Color(0xFF2E2E48),
     isDismissible: true,
     isScrollControlled: true,
@@ -18,7 +16,7 @@ void cadClientModal(BuildContext context, {ClientModel? client}) {
     ),
     builder: (context) {
       return CadClientModalbox(
-        isCreating: client == null, 
+        isCreating: client == null,
         client: client,
         onCancel: () {},
         onSuccess: () {},
@@ -49,7 +47,7 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
   final _formKey = GlobalKey<FormState>();
   late bool isPessoaJuridica;
   
-  
+  // Controllers
   late TextEditingController cpfController;
   late TextEditingController cepController;
   late TextEditingController nomeController;
@@ -79,7 +77,7 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
       isPessoaJuridica = (client?.cpf.length ?? 0) > 14;
     }
 
-    
+    // Inicialização dos controllers
     nomeController = TextEditingController(text: client?.nome ?? '');
     cpfController = TextEditingController(text: (!isPessoaJuridica ? client?.cpf : '') ?? '');
     cnpjController = TextEditingController(text: (isPessoaJuridica ? client?.cpf : '') ?? '');
@@ -129,8 +127,7 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
   Widget build(BuildContext context) {
     return Consumer<ClientViewModel>(
       builder: (context, vm, child) {
-        
-        
+        // Lógica de preenchimento automático
         if (vm.logradouro.isNotEmpty && logradouroController.text != vm.logradouro) {
           if (!vm.logradouro.contains('Deu ruim') && !vm.logradouro.contains('Buscando')) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -161,14 +158,14 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
 
         return Column(
           children: [
-            
+            // --- Cabeçalho do Modal ---
             Container(
               padding: const EdgeInsets.symmetric(
                 horizontal: 24,
                 vertical: 16,
               ),
               decoration: const BoxDecoration(
-                
+                // Cor sólida (Opaco)
                 color: Color(0xFF021D3B),
                 border: Border(
                   bottom: BorderSide(color: Color(0xFF021D3B)),
@@ -188,6 +185,16 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
                   ),
                   Row(
                     children: [
+                      // BOTÃO EXCLUIR (Só aparece se estiver editando)
+                      if (!widget.isCreating) ...[
+                        IconButton(
+                          onPressed: () => _confirmDelete(context, vm),
+                          icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                          tooltip: 'Excluir Cliente',
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+
                       OutlinedButton(
                         onPressed: () {
                           Navigator.pop(context);
@@ -222,7 +229,7 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
               ),
             ),
 
-            
+            // --- Conteúdo do Formulário ---
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24),
@@ -339,6 +346,51 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
     );
   }
 
+  void _confirmDelete(BuildContext context, ClientViewModel vm) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF021D3B),
+        title: const Text('Confirmar Exclusão', 
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 25,
+          )
+        ),
+        content: Text(
+          'Tem certeza que deseja excluir o cliente "${widget.client?.nome}"?', 
+          style: const TextStyle(color: Colors.white)
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancelar', style: TextStyle(color: Colors.white)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (widget.client != null) {
+                await vm.deleteClient(widget.client!);
+                if (mounted) {
+                  Navigator.pop(ctx);// ignore: use_build_context_synchronously
+                  Navigator.pop(context); // ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context).showSnackBar(// ignore: use_build_context_synchronously
+                    const SnackBar(
+                      content: Text('Cliente excluído com sucesso.'),
+                      backgroundColor: Colors.redAccent,
+                    ),
+                  );
+                  widget.onSuccess();
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Excluir', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _submitForm(ClientViewModel vm) async {
     if (_formKey.currentState!.validate() && selectedDate != null) {
       final documentoFinal = isPessoaJuridica
@@ -403,7 +455,6 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
               ? null
               : nomeFantasiaController.text.trim();
 
-          
           client.dependentes = vm.tempDependentes.map((d) {
             d.idCliente = client.idCliente;
             return d;
@@ -748,7 +799,6 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
           if (vm.tempDependentes.isNotEmpty)
             Container(
               decoration: BoxDecoration(
-                
                 border: Border.all(color: const Color(0xFF5F5FA7)),
                 borderRadius: BorderRadius.circular(8),
               ),

@@ -6,16 +6,17 @@ import 'package:provider/provider.dart';
 void cadProductModal(BuildContext context, {ProductModel? product}) {
   showModalBottomSheet(
     context: context,
-    
     backgroundColor: const Color(0xFF2E2E48),
     isDismissible: true,
     isScrollControlled: true,
+
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
     ),
+
     builder: (context) {
       return CadProductModaltela(
-        isCreating: product == null, 
+        isCreating: product == null,
         product: product,
         onCancel: () {},
         onSuccess: () {},
@@ -45,7 +46,6 @@ class CadProductModaltela extends StatefulWidget {
 class _CadProductModaltelaState extends State<CadProductModaltela> {
   final _formKey = GlobalKey<FormState>();
   
-  
   late TextEditingController cdBarrasController;
   late TextEditingController nomeController;
   late TextEditingController precoController;
@@ -59,14 +59,14 @@ class _CadProductModaltelaState extends State<CadProductModaltela> {
   void initState() {
     super.initState();
     final p = widget.product;
-    cdBarrasController = TextEditingController(text: p?.cdBarras ?? '');
-    nomeController = TextEditingController(text: p?.nome ?? '');
-    precoController = TextEditingController(text: p?.preco.toString() ?? '');
-    estoqueController = TextEditingController(text: p?.estoque.toString() ?? '');
-    descricaoController = TextEditingController(text: p?.descricao ?? '');
-    categoriaController = TextEditingController(text: p?.categoria ?? '');
-    marcaController = TextEditingController(text: p?.marca ?? '');
-    pesoController = TextEditingController(text: p?.peso.toString() ?? '');
+    cdBarrasController = TextEditingController(text: p?.cdBarras);
+    nomeController = TextEditingController(text: p?.nome);
+    precoController = TextEditingController(text: p?.preco.toString());
+    estoqueController = TextEditingController(text: p?.estoque.toString());
+    descricaoController = TextEditingController(text: p?.descricao);
+    categoriaController = TextEditingController(text: p?.categoria);
+    marcaController = TextEditingController(text: p?.marca);
+    pesoController = TextEditingController(text: p?.peso.toString());
   }
 
   @override
@@ -88,17 +88,15 @@ class _CadProductModaltelaState extends State<CadProductModaltela> {
       builder: (context, vm, child) {
         return Column(
           children: [
-            
             Container(
               padding: const EdgeInsets.symmetric(
                 horizontal: 28,
                 vertical: 14,
               ),
               decoration: const BoxDecoration(
-                
                 color: Color(0xFF021D3B),
                 border: Border(
-                  bottom: BorderSide(color: Color(0xFF021D3B)), 
+                  bottom: BorderSide(color: Color(0xFF021D3B)),
                 ),
                 borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
               ),
@@ -106,7 +104,10 @@ class _CadProductModaltelaState extends State<CadProductModaltela> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    widget.isCreating ? 'Novo Produto' : 'Editando Produto',
+                    widget.isCreating 
+                    ? 'Novo Produto' 
+                    : 'Editando Produto',
+
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -115,6 +116,18 @@ class _CadProductModaltelaState extends State<CadProductModaltela> {
                   ),
                   Row(
                     children: [
+                      if (!widget.isCreating) ...[
+                        IconButton(
+                          onPressed: () => _confirmDelete(context, vm),
+                          icon: const Icon(
+                            Icons.delete_outline, 
+                            color: Colors.redAccent
+                          ),
+                          tooltip: 'Excluir Produto',
+                        ),
+                        const SizedBox(width: 8),
+                        
+                      ],
 
                       OutlinedButton(
                         onPressed: () {
@@ -141,43 +154,18 @@ class _CadProductModaltelaState extends State<CadProductModaltela> {
                           ),
                         ),
                         icon: const Icon(Icons.save),
-                        label: Text(widget.isCreating ? 'Salvar' : 'Atualizar'),
-                        onPressed: () => _submitForm(vm),
-                      ),
-
-                      const SizedBox(width: 12),
-                      
-                      ? widget.isCreating 
-                      ? null
-                      : ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: widget.isCreating
-                              ? const Color(0xFF05244D)
-                              : const Color(0xFFF5000C),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
-                          ),
-                        ),
-                        icon: Icon(widget.isCreating 
-                          ? null 
-                          : Icons.delete
-                        ),
                         label: Text(widget.isCreating 
-                          ? '' 
-                          : 'excluir'
+                          ? 'Salvar' 
+                          : 'Atualizar'
                         ),
                         onPressed: () => _submitForm(vm),
                       ),
-
                     ],
                   )
                 ],
               ),
             ),
 
-            
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24),
@@ -186,7 +174,6 @@ class _CadProductModaltelaState extends State<CadProductModaltela> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -210,8 +197,6 @@ class _CadProductModaltelaState extends State<CadProductModaltela> {
                               ),
                               validator: (v) =>
                                   v!.isEmpty ? 'Obrigatório' : null,
-                              
-                              
                               style: const TextStyle(color: Colors.white),
                             ),
                             const SizedBox(height: 16),
@@ -242,8 +227,6 @@ class _CadProductModaltelaState extends State<CadProductModaltela> {
                       ),
                       
                       const SizedBox(width: 32),
-
-                      
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -317,7 +300,7 @@ class _CadProductModaltelaState extends State<CadProductModaltela> {
                                 ),
                               ],
                             ),
-
+                            const SizedBox(height: 16),
                             TextFormField(
                               controller: pesoController,
                               decoration: const InputDecoration(
@@ -342,11 +325,55 @@ class _CadProductModaltelaState extends State<CadProductModaltela> {
     );
   }
 
+  void _confirmDelete(BuildContext context, ProductViewModel vm) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF021D3B),
+        title: Text('Confirmar Exclusão', 
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 23
+          ),
+        ),
+        content: Text(
+          'Tem certeza que deseja excluir "${widget.product?.nome}"?', 
+          style: const TextStyle(color: Colors.white)
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancelar', style: TextStyle(color: Colors.white)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (widget.product != null) {
+                await vm.deleteProduct(widget.product!);
+                if (mounted) {
+                  Navigator.pop(ctx); // ignore: use_build_context_synchronously
+                  Navigator.pop(context); // ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context).showSnackBar( // ignore: use_build_context_synchronously
+                    const SnackBar(
+                      content: Text('Produto excluído com sucesso.'),
+                      backgroundColor: Colors.redAccent,
+                    ),
+                  );
+                  widget.onSuccess();
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Excluir', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _submitForm(ProductViewModel vm) async {
     if (_formKey.currentState!.validate()) {
       try {
         final newNome = nomeController.text.trim();
-        
         final newPreco = double.tryParse(precoController.text.replaceAll(',', '.')) ?? 0.0;
         final newEstoque = int.tryParse(estoqueController.text) ?? 0;
         final newDescricao = descricaoController.text.trim();
@@ -374,7 +401,7 @@ class _CadProductModaltelaState extends State<CadProductModaltela> {
               ),
             );
             widget.onSuccess();
-            Navigator.pop(context); 
+            Navigator.pop(context);
           }
         } else {
           final product = widget.product!;
@@ -385,8 +412,6 @@ class _CadProductModaltelaState extends State<CadProductModaltela> {
           product.categoria = newCategoria;
           product.marca = newMarca;
           product.peso = newPeso;
-          
-          
 
           await vm.updateProduct(product);
 
@@ -398,7 +423,7 @@ class _CadProductModaltelaState extends State<CadProductModaltela> {
               ),
             );
             widget.onSuccess();
-            Navigator.pop(context); 
+            Navigator.pop(context);
           }
         }
       } catch (e) {
