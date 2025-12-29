@@ -47,7 +47,6 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
   final _formKey = GlobalKey<FormState>();
   late bool isPessoaJuridica;
   
-  // Controllers
   late TextEditingController cpfController;
   late TextEditingController cepController;
   late TextEditingController nomeController;
@@ -71,13 +70,15 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
     super.initState();
     final client = widget.client;
 
+    
     if (widget.isCreating) {
       isPessoaJuridica = false;
     } else {
-      isPessoaJuridica = (client?.cpf.length ?? 0) > 14;
+      
+      final cleanDoc = (client?.cpf ?? '').replaceAll(RegExp(r'[^0-9]'), '');
+      isPessoaJuridica = cleanDoc.length > 11;
     }
 
-    // Inicialização dos controllers
     nomeController = TextEditingController(text: client?.nome ?? '');
     cpfController = TextEditingController(text: (!isPessoaJuridica ? client?.cpf : '') ?? '');
     cnpjController = TextEditingController(text: (isPessoaJuridica ? client?.cpf : '') ?? '');
@@ -123,11 +124,20 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
     super.dispose();
   }
 
+  
+  int _countDigits(String value) {
+    return value.replaceAll(RegExp(r'[^0-9]'), '').length;
+  }
+
+  
+  String _cleanDocument(String value) {
+    return value.replaceAll(RegExp(r'[^0-9]'), '');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ClientViewModel>(
       builder: (context, vm, child) {
-        // Lógica de preenchimento automático
         if (vm.logradouro.isNotEmpty && logradouroController.text != vm.logradouro) {
           if (!vm.logradouro.contains('Deu ruim') && !vm.logradouro.contains('Buscando')) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -158,14 +168,12 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
 
         return Column(
           children: [
-            // --- Cabeçalho do Modal ---
             Container(
               padding: const EdgeInsets.symmetric(
                 horizontal: 24,
                 vertical: 16,
               ),
               decoration: const BoxDecoration(
-                // Cor sólida (Opaco)
                 color: Color(0xFF021D3B),
                 border: Border(
                   bottom: BorderSide(color: Color(0xFF021D3B)),
@@ -185,16 +193,19 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
                   ),
                   Row(
                     children: [
-                      // BOTÃO EXCLUIR (Só aparece se estiver editando)
                       if (!widget.isCreating) ...[
                         IconButton(
                           onPressed: () => _confirmDelete(context, vm),
-                          icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                          icon: const Icon(
+                            Icons.delete_outline, 
+                            color: Colors.redAccent
+                          ),
+
                           tooltip: 'Excluir Cliente',
+
                         ),
                         const SizedBox(width: 8),
                       ],
-
                       OutlinedButton(
                         onPressed: () {
                           Navigator.pop(context);
@@ -220,7 +231,10 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
                           ),
                         ),
                         icon: const Icon(Icons.save),
-                        label: Text(widget.isCreating ? 'Salvar' : 'Atualizar'),
+                        label: Text(widget.isCreating 
+                          ? 'Salvar' 
+                          : 'Atualizar'
+                        ),
                         onPressed: () => _submitForm(vm),
                       ),
                     ],
@@ -228,8 +242,6 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
                 ],
               ),
             ),
-
-            // --- Conteúdo do Formulário ---
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24),
@@ -353,27 +365,30 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
         backgroundColor: const Color(0xFF021D3B),
         title: const Text('Confirmar Exclusão', 
           style: TextStyle(
-            color: Colors.white,
-            fontSize: 25,
+            color: Colors.white, 
+            fontSize: 20
           )
         ),
-        content: Text(
-          'Tem certeza que deseja excluir o cliente "${widget.client?.nome}"?', 
+        content: Text('Tem certeza que deseja excluir o cliente "${widget.client?.nome}"?', 
           style: const TextStyle(color: Colors.white)
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancelar', style: TextStyle(color: Colors.white)),
+            child: const Text('Cancelar', 
+              style: TextStyle(
+                color: Colors.white
+              )
+            ),
           ),
           ElevatedButton(
             onPressed: () async {
               if (widget.client != null) {
                 await vm.deleteClient(widget.client!);
                 if (mounted) {
-                  Navigator.pop(ctx);// ignore: use_build_context_synchronously
+                  Navigator.pop(ctx); // ignore: use_build_context_synchronously
                   Navigator.pop(context); // ignore: use_build_context_synchronously
-                  ScaffoldMessenger.of(context).showSnackBar(// ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context).showSnackBar( // ignore: use_build_context_synchronously
                     const SnackBar(
                       content: Text('Cliente excluído com sucesso.'),
                       backgroundColor: Colors.redAccent,
@@ -383,8 +398,13 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
                 }
               }
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Excluir', style: TextStyle(color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red
+            ),
+            child: const Text('Excluir', 
+            style: TextStyle(
+              color: Colors.white
+              )),
           ),
         ],
       ),
@@ -393,9 +413,10 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
 
   Future<void> _submitForm(ClientViewModel vm) async {
     if (_formKey.currentState!.validate() && selectedDate != null) {
+      
       final documentoFinal = isPessoaJuridica
-          ? cnpjController.text.trim()
-          : cpfController.text.trim();
+          ? _cleanDocument(cnpjController.text)
+          : _cleanDocument(cpfController.text);
 
       try {
         if (widget.isCreating) {
@@ -537,11 +558,15 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
           ),
         ),
         const Divider(color: Colors.white24),
+        
+        
         if (isPessoaJuridica)
           TextFormField(
             controller: cnpjController,
             decoration: InputDecoration(
               labelText: 'CNPJ',
+              hintText: '00.000.000/0000-00',
+              hintStyle: const TextStyle(color: Colors.white30),
               border: const OutlineInputBorder(),
               suffixIcon: vm.empresa == 'Buscando...'
                   ? const Padding(
@@ -560,33 +585,53 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
                     ),
               labelStyle: const TextStyle(color: Colors.white),
             ),
-            validator: (v) => isPessoaJuridica && (v == null || v.isEmpty)
-                ? 'Obrigatório'
-                : null,
+            keyboardType: TextInputType.number,
+            validator: (v) {
+              if (!isPessoaJuridica) return null;
+              if (v == null || v.isEmpty) return 'Obrigatório';
+              
+              if (_countDigits(v) != 14) return 'CNPJ inválido';
+              return null;
+            },
             style: const TextStyle(color: Colors.white),
           )
+        
         else
           TextFormField(
             controller: cpfController,
             decoration: const InputDecoration(
               labelText: 'CPF',
+              hintText: '000.000.000-00',
+              hintStyle: TextStyle(color: Colors.white30),
               border: OutlineInputBorder(),
               labelStyle: TextStyle(color: Colors.white),
             ),
-            validator: (v) => !isPessoaJuridica && (v == null || v.isEmpty)
-                ? 'Obrigatório'
-                : null,
+            keyboardType: TextInputType.number,
+            validator: (v) {
+              if (isPessoaJuridica) return null;
+              if (v == null || v.isEmpty) return 'Obrigatório';
+              
+              if (_countDigits(v) != 11) return 'CPF inválido';
+              return null;
+            },
             enabled: !isEditing,
             style: const TextStyle(color: Colors.white),
           ),
+        
         const SizedBox(height: 15),
         TextFormField(
           controller: nomeController,
           decoration: InputDecoration(
-              labelText: isPessoaJuridica ? 'Razão Social' : 'Nome Completo',
+              labelText: isPessoaJuridica 
+              ? 'Razão Social' 
+              : 'Nome Completo',
+
               border: const OutlineInputBorder(),
               labelStyle: const TextStyle(color: Colors.white)),
-          validator: (v) => v!.isEmpty ? 'Obrigatório' : null,
+          validator: (v) => v!.isEmpty 
+          ? 'Obrigatório' 
+          : null,
+
           style: const TextStyle(color: Colors.white),
         ),
         const SizedBox(height: 15),
@@ -603,7 +648,10 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
           child: InputDecorator(
             decoration: InputDecoration(
               labelText:
-                  isPessoaJuridica ? 'Data Fundação' : 'Data Nascimento',
+                  isPessoaJuridica 
+                  ? 'Data Fundação' 
+                  : 'Data Nascimento',
+
               border: const OutlineInputBorder(),
               suffixIcon: const Icon(
                 Icons.calendar_today,
@@ -615,6 +663,7 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
               dataNascimentoController.text.isEmpty
                   ? 'Selecione'
                   : dataNascimentoController.text,
+                  
               style: const TextStyle(color: Colors.white),
             ),
           ),
@@ -627,6 +676,7 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
             border: OutlineInputBorder(),
             labelStyle: TextStyle(color: Colors.white),
           ),
+          keyboardType: TextInputType.phone,
           style: const TextStyle(color: Colors.white),
         ),
         const SizedBox(height: 15),
@@ -637,6 +687,7 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
             border: OutlineInputBorder(),
             labelStyle: TextStyle(color: Colors.white),
           ),
+          keyboardType: TextInputType.emailAddress,
           style: const TextStyle(color: Colors.white),
         ),
       ],
@@ -687,6 +738,7 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
                     onPressed: () => vm.searchCep(cepController.text),
                   ),
                 ),
+                keyboardType: TextInputType.number,
                 style: const TextStyle(color: Colors.white),
               ),
             ),
@@ -775,10 +827,12 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text("Dependentes",
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white)),
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
               TextButton.icon(
                 onPressed: () {
                   showDialog(
@@ -792,14 +846,19 @@ class _CadClientModalboxState extends State<CadClientModalbox> {
                   color: Colors.white,
                 ),
                 label: const Text("Adicionar",
-                    style: TextStyle(color: Colors.white)),
+                  style: TextStyle(
+                    color: Colors.white
+                  )
+                ),
               ),
             ],
           ),
           if (vm.tempDependentes.isNotEmpty)
             Container(
               decoration: BoxDecoration(
-                border: Border.all(color: const Color(0xFF5F5FA7)),
+                border: Border.all(
+                  color: const Color(0xFF5F5FA7)
+                ),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(

@@ -1,4 +1,3 @@
-
 import 'package:cadrey/pages/clientes/Model/client_model.dart';
 import 'package:cadrey/pages/clientes/client_service.dart';
 import 'package:flutter/foundation.dart';
@@ -15,9 +14,10 @@ class ClientViewModel extends ChangeNotifier {
   String _bairro = '';
   String _cidade = '';
   String _estado = '';
-  String _numero = ''; // Adicionado para mapear com o novo model
+  String _numero = ''; 
   String _empresa = '';
   String _nomeRazaoSocial = '';
+  String _complemento = '';
 
   List<DependentModel> _tempDependentes = [];
 
@@ -28,6 +28,7 @@ class ClientViewModel extends ChangeNotifier {
   String get bairro => _bairro;
   String get cidade => _cidade;
   String get estado => _estado;
+  String get complemento => _complemento;
   String get empresa => _empresa;
   String get nomeRazaoSocial => _nomeRazaoSocial;
   List<DependentModel> get tempDependentes => _tempDependentes;
@@ -39,18 +40,21 @@ class ClientViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ignore: unused_element
+  
   void _clearAddressFields() {
-    _logradouro = ''; _bairro = ''; _cidade = ''; _estado = ''; _numero = '';
+    _logradouro = ''; _bairro = ''; _cidade = ''; _estado = ''; _numero = ''; _complemento = '';
     notifyListeners();
   }
-  // ignore: unused_element
+  
   void _clearCnpjFields() {
     _empresa = ''; _nomeRazaoSocial = '';
     notifyListeners();
   }
+  
   void clearTempDependents() {
     _tempDependentes = [];
+    _clearAddressFields();
+    _clearCnpjFields();
     notifyListeners();
   }
 
@@ -91,8 +95,69 @@ class ClientViewModel extends ChangeNotifier {
     _setLoading(false);
   }
 
-  Future<void> searchCep(String cep) async { /* Código existente */ }
-  Future<void> searchCnpj(String cnpj) async { /* Código existente */ }
+  
+  Future<void> searchCep(String cep) async {
+    if (cep.isEmpty) return;
+
+    
+    _logradouro = 'Buscando...';
+    _bairro = '...';
+    _cidade = '...';
+    _estado = '...';
+    notifyListeners();
+
+    final data = await _clientService.fetchCep(cep);
+
+    if (data != null) {
+      
+      _logradouro = data['logradouro'] ?? '';
+      _bairro = data['bairro'] ?? '';
+      _cidade = data['localidade'] ?? ''; 
+      _estado = data['uf'] ?? '';         
+      _complemento = data['complemento'] ?? '';
+    } else {
+      
+      _logradouro = '';
+      _bairro = '';
+      _cidade = '';
+      _estado = '';
+      _complemento = '';
+    }
+    notifyListeners();
+  }
+
+  
+  Future<void> searchCnpj(String cnpj) async {
+    if (cnpj.isEmpty) return;
+
+    _empresa = 'Buscando...';
+    _nomeRazaoSocial = '...';
+    notifyListeners();
+
+    final data = await _clientService.fetchCnpj(cnpj);
+
+    if (data != null) {
+      _nomeRazaoSocial = data['razao_social'] ?? '';
+      _empresa = data['nome_fantasia'] ?? _nomeRazaoSocial;
+
+      
+      if (data['logradouro'] != null) {
+        final tipo = data['tipo_logradouro'] ?? '';
+        final log = data['logradouro'] ?? '';
+        _logradouro = '$tipo $log'.trim();
+        
+        _numero = data['numero'] ?? '';
+        _complemento = data['complemento'] ?? '';
+        _bairro = data['bairro'] ?? '';
+        _cidade = data['municipio'] ?? '';
+        _estado = data['uf'] ?? '';
+      }
+    } else {
+      _empresa = 'Não encontrado';
+      _nomeRazaoSocial = '';
+    }
+    notifyListeners();
+  }
 
   Future<void> addNewClient({
     required String nome,

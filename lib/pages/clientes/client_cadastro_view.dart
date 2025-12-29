@@ -13,7 +13,27 @@ class ClientCadastroView extends StatefulWidget {
 
 class _ClientCadastroViewState extends State<ClientCadastroView> {
   ClientModel? _selectedClient;
-  final bool _isCreatingNew = false;
+  bool _isCreatingNew = false;
+
+  
+  String _formatCpfCnpj(String? value) {
+    if (value == null || value.isEmpty) return '';
+    
+    
+    final numbers = value.replaceAll(RegExp(r'[^0-9]'), '');
+
+    
+    if (numbers.length == 11) {
+      return '${numbers.substring(0, 3)}.${numbers.substring(3, 6)}.${numbers.substring(6, 9)}-${numbers.substring(9, 11)}';
+    }
+    
+    else if (numbers.length == 14) {
+      return '${numbers.substring(0, 2)}.${numbers.substring(2, 5)}.${numbers.substring(5, 8)}/${numbers.substring(8, 12)}-${numbers.substring(12, 14)}';
+    }
+    
+    
+    return value;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +59,8 @@ class _ClientCadastroViewState extends State<ClientCadastroView> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  if (!_isCreatingNew && _selectedClient == null)
+
+                  if (!_isCreatingNew)
                     ElevatedButton.icon(
                       onPressed: () {
                         setState(() {
@@ -48,6 +69,7 @@ class _ClientCadastroViewState extends State<ClientCadastroView> {
                         viewModel.clearTempDependents();
                       },
                       label: const Icon(
+
                         Icons.add,
                         size: 18,
                       ),
@@ -59,37 +81,49 @@ class _ClientCadastroViewState extends State<ClientCadastroView> {
                 ],
               ),
             ),
+             
             Expanded(
               child: Container(
                 color: const Color(0x0007171b),
                 child: Column(
                   children: [
+                    
                     Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.all(20.0),
                       child: TextField(
                         decoration: InputDecoration(
                           hintText: 'Pesquisar Cliente...',
-                          hintStyle: const TextStyle(color: Colors.white70),
+                          hintStyle: const TextStyle(
+                            color: Colors.white70
+                          ),
+                          
                           prefixIcon: const Icon(
                             Icons.search,
                             color: Colors.white,
                           ),
+
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(20),
                             borderSide: BorderSide.none,
                           ),
+
                           filled: true,
                           fillColor: const Color(0xFF021D3B),
                           isDense: true,
                         ),
-                        style: const TextStyle(color: Colors.white),
-                        onChanged: (value) {
-                          
-                        },
+
+                        style: const TextStyle(
+                          color: Colors.white
+                        ),
+
+                        onChanged: (value) {},
                       ),
                     ),
                     
-                    const Divider(height: 1, color: Colors.white10),
+                    const Divider(
+                      height: 1, 
+                      color: Colors.white10
+                    ),
 
                     Expanded(
                       child: viewModel.isLoading
@@ -116,7 +150,9 @@ class _ClientCadastroViewState extends State<ClientCadastroView> {
                                   itemBuilder: (context, index) {
                                     final client = viewModel.clients[index];
                                     final isSelected = _selectedClient == client;
-                                    final isPJ = client.cpf.length > 14;
+                                    
+                                    final cleanCpf = client.cpf.replaceAll(RegExp(r'[^0-9]'), '');
+                                    final isPJ = cleanCpf.length > 11;
 
                                     return _buildClientCard(
                                       client: client,
@@ -124,7 +160,8 @@ class _ClientCadastroViewState extends State<ClientCadastroView> {
                                       isPJ: isPJ,
                                       onTap: () {
                                         setState(() {
-                                          cadClientModal(context, client: client);
+                                          _selectedClient = client;
+                                          _isCreatingNew = false;
                                         });
 
                                         viewModel.clearTempDependents();
@@ -137,6 +174,7 @@ class _ClientCadastroViewState extends State<ClientCadastroView> {
                                             );
                                           }
                                         }
+                                        cadClientModal(context, client: client);
                                       },
                                       onDelete: () => _confirmDelete(context, viewModel, client),
                                     );
@@ -165,13 +203,10 @@ class _ClientCadastroViewState extends State<ClientCadastroView> {
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: isSelected 
-            ? const BorderSide(color: Colors.blueAccent, width: 2) 
-            : BorderSide.none,
       ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(12),
         hoverColor: Color(0xFF434372),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -184,19 +219,33 @@ class _ClientCadastroViewState extends State<ClientCadastroView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CircleAvatar(
-                    backgroundColor: isPJ ? Colors.orange.shade100 : Colors.indigo.shade100,
+                    backgroundColor: isPJ 
+                    ? Colors.orange.shade100
+                    : Colors.indigo,
+
                     child: Icon(
-                      isPJ ? Icons.domain : Icons.person,
-                      color: isPJ ? Colors.orange : Colors.indigo,
+                      isPJ
+                      ? Icons.domain 
+                      : Icons.person,
+
+                      color: isPJ 
+                      ? Colors.orange 
+                      : Colors.indigo,
                     ),
+                    
                   ),
                   IconButton(
-                    icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 20),
+                    icon: const Icon(
+                      Icons.delete_outline, 
+                      color: Colors.redAccent, 
+                      size: 20
+                    ),
+
                     onPressed: onDelete,
                     tooltip: "Excluir",
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
-                  )
+                  ),
                 ],
               ),
               const SizedBox(height: 8),
@@ -207,26 +256,41 @@ class _ClientCadastroViewState extends State<ClientCadastroView> {
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontSize: 16,
+                  fontSize: 18,
                 ),
               ),
-              const SizedBox(height: 4),
+
               Text(
-                '${isPJ ? "CNPJ" : "CPF"}: ${client.cpf}',
-                style: const TextStyle(color: Colors.white70, fontSize: 12),
+                '${isPJ 
+                  ? "CNPJ" 
+                  : "CPF"
+                }: ${_formatCpfCnpj(client.cpf)}',
+                style: const TextStyle(
+                  color: Colors.white70, 
+                  fontSize: 13
+                ),
               ),
               if (client.cidade.isNotEmpty)
                 Padding(
-                  padding: const EdgeInsets.only(top: 4.0),
+                  padding: const EdgeInsets.only(top: 15.0),
                   child: Row(
                     children: [
-                      const Icon(Icons.location_on, size: 12, color: Colors.grey),
-                      const SizedBox(width: 4),
+                      const Icon(
+                        Icons.location_on, 
+                        size: 15, 
+                        color: Colors.grey
+                      ),
+
+                      const SizedBox(width: 5),
+
                       Expanded(
                         child: Text(
                           '${client.cidade} - ${client.estado}',
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(color: Colors.grey, fontSize: 11),
+                          overflow: TextOverflow.ellipsis, 
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 11
+                          ),
                         ),
                       ),
                     ],
@@ -238,29 +302,35 @@ class _ClientCadastroViewState extends State<ClientCadastroView> {
       ),
     );
   }
-
+  
   void _confirmDelete(BuildContext context, ClientViewModel viewModel, ClientModel client) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF021D3B),
-        title: Text('Confirmar Exclusão', 
+        title: const Text('Confirmar Exclusão',
           style: TextStyle(
-            color: Colors.white, 
-            fontSize: 23
+            color: Colors.white,
+            fontSize: 20,
           )
         ),
-        content: Text('Tem certeza que deseja excluir "${client.nome}"?', 
+
+        content: Text('Tem certeza que deseja excluir o cadastro: "${client.nome}"?',
           style: const TextStyle(
             color: Colors.white
           )
         ),
+
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: const Text('Cancelar', 
-            style: TextStyle(color: Colors.white)),
+              style: TextStyle(
+                color: Colors.white
+              )
+            ),
           ),
+
           ElevatedButton(
             onPressed: () async {
               await viewModel.deleteClient(client);
@@ -268,12 +338,20 @@ class _ClientCadastroViewState extends State<ClientCadastroView> {
                 Navigator.pop(ctx); // ignore: use_build_context_synchronously
                 setState(() => _selectedClient = null);
                 ScaffoldMessenger.of(context).showSnackBar( // ignore: use_build_context_synchronously
-                  const SnackBar(content: Text('Cliente excluído.'), backgroundColor: Colors.redAccent),
+                  const SnackBar(
+                    content: Text('Cliente excluído.'), 
+                    backgroundColor: Colors.redAccent
+                  ),
                 );
               }
             },
+
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Excluir', style: TextStyle(color: Colors.white)),
+            child: const Text('Excluir', 
+              style: TextStyle(
+                color: Colors.white
+              )
+            ),
           ),
         ],
       ),

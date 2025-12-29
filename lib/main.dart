@@ -13,7 +13,6 @@ import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   MaterialApp(
@@ -24,13 +23,11 @@ void main() async {
       GlobalWidgetsLocalizations.delegate,
       GlobalCupertinoLocalizations.delegate, 
     ],
-
     supportedLocales: [const Locale('pt', 'BR')],
   );
 
   runApp(
     MultiProvider(
-
       providers: [
         ChangeNotifierProvider(
           create: (_) => ProductViewModel(ProductService())..loadProducts(),
@@ -54,14 +51,16 @@ class CadastreReyApp extends StatelessWidget {
     selectedIndex: 0, 
     extended: true
   );
+
   final _key = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       title: 'CadRey',
       debugShowCheckedModeBanner: false,
-
+    
       theme: ThemeData(
         primaryColor: primaryColor,
         canvasColor: canvasColor,
@@ -70,7 +69,7 @@ class CadastreReyApp extends StatelessWidget {
         textTheme: const TextTheme(
           headlineSmall: TextStyle(
             color: Colors.white,
-            fontSize: 46,
+            fontSize: 50,
             fontWeight: FontWeight.w800,
           ),
         ),
@@ -85,18 +84,18 @@ class CadastreReyApp extends StatelessWidget {
             appBar: isSmallScreen
 
             ? AppBar(
-                backgroundColor: canvasColor,
-                title: Text(_getTitleByIndex(_controller.selectedIndex)),
+              backgroundColor: canvasColor,
+              title: Text(_getTitleByIndex(_controller.selectedIndex)),
 
-                leading: IconButton(
-                  onPressed: () {_key.currentState?.openDrawer();},
+              leading: IconButton(
+                onPressed: () {_key.currentState?.openDrawer();},
 
-                  icon: const Icon(
-                    Icons.menu, 
-                    color: Colors.white,
-                  ),
+                icon: const Icon(
+                  Icons.menu,
+                  color: Colors.white,
                 ),
-              ): null,
+               ),
+            ): null,
 
             drawer: DashboardDrawer(controller: _controller),
 
@@ -136,9 +135,13 @@ class DashboardDrawer extends StatelessWidget {
 
         hoverColor: scaffoldBackgroundColor,
 
-        textStyle: const TextStyle(color: Colors.white),
+        textStyle: const TextStyle(
+          color: Colors.white
+        ),
 
-        selectedTextStyle: const TextStyle(color: Colors.white),
+        selectedTextStyle: const TextStyle(
+          color: Colors.white
+        ),
 
         hoverTextStyle: const TextStyle(
           color: Colors.white,
@@ -151,7 +154,10 @@ class DashboardDrawer extends StatelessWidget {
         
         itemDecoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: canvasColor),
+
+          border: Border.all(
+            color: canvasColor
+          ),
         ),
 
         selectedItemDecoration: BoxDecoration(
@@ -315,10 +321,10 @@ class DashboardHomeContent extends StatelessWidget {
 
   Widget _buildTotalCard(
     BuildContext context, {
-    required String title,
-    required int value,
-    required IconData icon,
-    required Color color,
+      required String title,
+      required int value,
+      required IconData icon,
+      required Color color,
     }
   ) {
     final isLoading =
@@ -365,7 +371,7 @@ class DashboardHomeContent extends StatelessWidget {
                   isLoading
                   ? const SizedBox(
                       height: 40,
-                      child: LinearProgressIndicator(color: Colors.white),
+                      child: LinearProgressIndicator(color: Colors.white,),
                     )
                   
                   : Text(
@@ -441,7 +447,7 @@ class DashboardHomeContent extends StatelessWidget {
             Text(
               title,
               style: TextStyle(
-                fontSize: 14, 
+                fontSize: 14,
                 color: Colors.white
               ),
             ),
