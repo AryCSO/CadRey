@@ -1,6 +1,6 @@
 
 import 'package:cadrey/pages/produtos/Model/product_model.dart';
-import 'package:cadrey/pages/produtos/product_service.dart';
+import 'package:cadrey/pages/produtos/Service/product_service.dart';
 import 'package:flutter/material.dart';
 
 class ProductViewModel extends ChangeNotifier {

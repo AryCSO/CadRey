@@ -1,5 +1,5 @@
 import 'package:cadrey/pages/clientes/Model/client_model.dart';
-import 'package:cadrey/pages/clientes/client_service.dart';
+import 'package:cadrey/pages/clientes/Service/client_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 

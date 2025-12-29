@@ -1,5 +1,5 @@
 import 'package:cadrey/pages/clientes/Model/client_model.dart';
-import 'package:cadrey/pages/clientes/client_viewmodel.dart';
+import 'package:cadrey/pages/clientes/ViewModel/client_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';

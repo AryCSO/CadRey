@@ -1,15 +1,15 @@
-import 'package:cadrey/pages/clientes/client_cadastro_view.dart';
-import 'package:cadrey/pages/clientes/client_service.dart';
-import 'package:cadrey/pages/clientes/client_viewmodel.dart';
-import 'package:cadrey/pages/produtos/product_cadastro_view.dart';
-import 'package:cadrey/pages/produtos/product_service.dart';
-import 'package:cadrey/pages/produtos/product_viewmodel.dart';
+import 'package:cadrey/pages/clientes/View/client_cadastro_view.dart';
+import 'package:cadrey/pages/clientes/Service/client_service.dart';
+import 'package:cadrey/pages/clientes/ViewModel/client_viewmodel.dart';
+import 'package:cadrey/pages/produtos/View/product_cadastro_view.dart';
+import 'package:cadrey/pages/produtos/Service/product_service.dart';
+import 'package:cadrey/pages/produtos/ViewModel/product_viewmodel.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:sidebarx/sidebarx.dart';
-import 'firebase_options.dart';
+import 'FireBase/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

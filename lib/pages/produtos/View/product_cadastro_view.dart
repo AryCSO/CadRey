@@ -1,6 +1,6 @@
 import 'package:cadrey/pages/produtos/Model/product_model.dart';
 import 'package:cadrey/pages/produtos/product_modal.dart';
-import 'package:cadrey/pages/produtos/product_viewmodel.dart';
+import 'package:cadrey/pages/produtos/ViewModel/product_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
